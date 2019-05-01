@@ -1,0 +1,7 @@
+[package]
+name = "teensy"
+version = "0.1.0"
+authors = ["Thomas Campistron <irevoire@hotmail.fr>"]
+edition = "2018"
+
+[dependencies]
