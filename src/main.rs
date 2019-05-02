@@ -7,15 +7,12 @@ mod sim;
 mod watchdog;
 
 #[no_mangle]
-fn sleep() -> u32 {
-    let mut a = 0;
+fn sleep() {
     for _ in 0..200000 {
         unsafe {
-            let mut pcr = core::ptr::read_volatile(&a);
+            core::arch::arm::__nop();
         }
-        a += 1;
     }
-    a
 }
 
 #[no_mangle]
@@ -35,18 +32,10 @@ extern fn main() {
     gpio.low();
 
     gpio.high();
-    let mut a = 0;
     loop {
-    gpio.output();
-        a -= sleep();
+        sleep();
         gpio.low();
-        a += sleep();
-        if a == 2 {
-            break;
-        }
-    }
-    unsafe {
-        core::ptr::write_volatile(&mut 42, a);
+        sleep();
     }
 }
 
