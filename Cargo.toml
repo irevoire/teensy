@@ -5,3 +5,5 @@ authors = ["Thomas Campistron <irevoire@hotmail.fr>"]
 edition = "2018"
 
 [dependencies]
+volatile = "*"
+bit_field = "*"
