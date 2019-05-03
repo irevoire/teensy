@@ -1,11 +1,11 @@
 use core;
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 pub enum PortName {
-    C
+    C,
 }
 
-#[repr(C,packed)]
+#[repr(C, packed)]
 pub struct Port {
     pcr: [u32; 32],
     gpclr: u32,
@@ -16,8 +16,8 @@ pub struct Port {
 
 impl Port {
     pub unsafe fn new(name: PortName) -> &'static mut Port {
-        &mut * match name {
-            PortName::C => 0x4004B000 as *mut Port
+        &mut *match name {
+            PortName::C => 0x4004B000 as *mut Port,
         }
     }
 
@@ -34,7 +34,7 @@ impl Port {
         let addr = (self as *const Port) as u32;
         match addr {
             0x4004B000 => PortName::C,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -43,24 +43,24 @@ impl Port {
     }
 }
 
-#[repr(C,packed)]
+#[repr(C, packed)]
 struct GpioBitband {
     pdor: [u32; 32],
     psor: [u32; 32],
     pcor: [u32; 32],
     ptor: [u32; 32],
     pdir: [u32; 32],
-    pddr: [u32; 32]
+    pddr: [u32; 32],
 }
 
 pub struct Gpio {
     gpio: *mut GpioBitband,
-    pin: usize
+    pin: usize,
 }
 
 pub struct Pin {
     port: *mut Port,
-    pin: usize
+    pin: usize,
 }
 
 impl Pin {
@@ -76,7 +76,7 @@ impl Pin {
 impl Gpio {
     pub unsafe fn new(port: PortName, pin: usize) -> Gpio {
         let gpio = match port {
-            PortName::C => 0x43FE1000 as *mut GpioBitband
+            PortName::C => 0x43FE1000 as *mut GpioBitband,
         };
 
         Gpio { gpio, pin }
@@ -96,13 +96,13 @@ impl Gpio {
 
     pub fn low(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).ptor[self.pin], 1);
+            core::ptr::write_volatile(&mut (*self.gpio).pcor[self.pin], 1);
         }
     }
-    
-    pub fn low_experimental(&mut self) {
+
+    pub fn toggle(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).pcor[self.pin], 1);
+            core::ptr::write_volatile(&mut (*self.gpio).ptor[self.pin], 1);
         }
     }
 }
