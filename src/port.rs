@@ -99,4 +99,10 @@ impl Gpio {
             core::ptr::write_volatile(&mut (*self.gpio).ptor[self.pin], 1);
         }
     }
+    
+    pub fn low_experimental(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut (*self.gpio).pcor[self.pin], 1);
+        }
+    }
 }
