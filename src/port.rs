@@ -94,18 +94,26 @@ impl Gpio {
         }
     }
 
+    /// before use call the `input` function
+    pub fn read(&mut self) -> u32 {
+        unsafe { core::ptr::read_volatile(&mut (*self.gpio).pdir[self.pin]) }
+    }
+
+    /// before use call the `output` function
     pub fn high(&mut self) {
         unsafe {
             core::ptr::write_volatile(&mut (*self.gpio).psor[self.pin], 1);
         }
     }
 
+    /// before use call the `output` function
     pub fn low(&mut self) {
         unsafe {
             core::ptr::write_volatile(&mut (*self.gpio).pcor[self.pin], 1);
         }
     }
 
+    /// before use call the `output` function
     pub fn toggle(&mut self) {
         unsafe {
             core::ptr::write_volatile(&mut (*self.gpio).ptor[self.pin], 1);
