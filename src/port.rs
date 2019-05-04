@@ -82,6 +82,12 @@ impl Gpio {
         Gpio { gpio, pin }
     }
 
+    pub fn input(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut (*self.gpio).pddr[self.pin], 0);
+        }
+    }
+
     pub fn output(&mut self) {
         unsafe {
             core::ptr::write_volatile(&mut (*self.gpio).pddr[self.pin], 1);
