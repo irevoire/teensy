@@ -3,7 +3,7 @@ use volatile::Volatile;
 
 #[derive(Clone, Copy)]
 pub enum Clock {
-    Port1,
+    PortA,
     PortB,
     PortC,
     PortD,
