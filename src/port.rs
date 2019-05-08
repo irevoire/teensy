@@ -104,12 +104,14 @@ impl Gpio {
         Gpio { gpio, pin }
     }
 
+    /// switch the pin in input mode (can read but not write)
     pub fn input(&mut self) {
         unsafe {
             (*self.gpio).pddr[self.pin].write(0);
         }
     }
 
+    /// switch the pin in output mode (can write but not read)
     pub fn output(&mut self) {
         unsafe {
             (*self.gpio).pddr[self.pin].write(1);
