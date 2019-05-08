@@ -3,7 +3,11 @@ use volatile::Volatile;
 
 #[derive(Clone, Copy)]
 pub enum Clock {
+    Port1,
+    PortB,
     PortC,
+    PortD,
+    PortE,
 }
 
 #[repr(C, packed)]
@@ -42,9 +46,29 @@ impl Sim {
     pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {
             match clock {
+                Clock::PortA => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(9, true);
+                    });
+                }
+                Clock::PortB => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(10, true);
+                    });
+                }
                 Clock::PortC => {
                     self.scgc5.update(|scgc5| {
                         scgc5.set_bit(11, true);
+                    });
+                }
+                Clock::PortD => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(12, true);
+                    });
+                }
+                Clock::PortE => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(13, true);
                     });
                 }
             }
