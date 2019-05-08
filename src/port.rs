@@ -2,7 +2,11 @@ use core;
 
 #[derive(Clone, Copy)]
 pub enum PortName {
+    A,
+    B,
     C,
+    D,
+    E,
 }
 
 #[repr(C, packed)]
@@ -17,14 +21,18 @@ pub struct Port {
 impl Port {
     pub unsafe fn new(name: PortName) -> &'static mut Port {
         &mut *match name {
-            PortName::C => 0x4004B000 as *mut Port,
+            PortName::A => 0x4004_9000 as *mut Port,
+            PortName::B => 0x4004_A000 as *mut Port,
+            PortName::C => 0x4004_B000 as *mut Port,
+            PortName::D => 0x4004_C000 as *mut Port,
+            PortName::E => 0x4004_D000 as *mut Port,
         }
     }
 
     pub unsafe fn set_pin_mode(&mut self, p: usize, mut mode: u32) {
         let mut pcr = core::ptr::read_volatile(&self.pcr[p]);
-        pcr &= 0xFFFFF8FF;
-        mode &= 0x00000007;
+        pcr &= !0x0000_0700;
+        mode &= 0x0000_0007;
         mode <<= 8;
         pcr |= mode;
         core::ptr::write_volatile(&mut self.pcr[p], pcr);
@@ -33,7 +41,11 @@ impl Port {
     pub fn name(&self) -> PortName {
         let addr = (self as *const Port) as u32;
         match addr {
-            0x4004B000 => PortName::C,
+            0x4004_9000 => PortName::A,
+            0x4004_A000 => PortName::B,
+            0x4004_B000 => PortName::C,
+            0x4004_C000 => PortName::D,
+            0x4004_D000 => PortName::E,
             _ => unreachable!(),
         }
     }
@@ -76,7 +88,11 @@ impl Pin {
 impl Gpio {
     pub unsafe fn new(port: PortName, pin: usize) -> Gpio {
         let gpio = match port {
-            PortName::C => 0x43FE1000 as *mut GpioBitband,
+            PortName::A => 0x43FE_0600 as *mut GpioBitband,
+            PortName::B => 0x43FE_0800 as *mut GpioBitband,
+            PortName::C => 0x43FE_1000 as *mut GpioBitband,
+            PortName::D => 0x43FE_1200 as *mut GpioBitband,
+            PortName::E => 0x43FE_1400 as *mut GpioBitband,    
         };
 
         Gpio { gpio, pin }
