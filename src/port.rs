@@ -1,4 +1,5 @@
-use core;
+use bit_field::BitField;
+use volatile::Volatile;
 
 #[derive(Clone, Copy)]
 pub enum PortName {
@@ -19,11 +20,11 @@ pub struct Port {
     /* One for each pin on this port
        Bits 8-10 : MUX
     */
-    pcr: [u32; 32],
-    gpclr: u32,
-    gpchr: u32,
-    reserved_0: [u8; 24],
-    isfr: u32,
+    pcr: [Volatile<u32>; 32],
+    gpclr: Volatile<u32>,
+    gpchr: Volatile<u32>,
+    _reserved: Volatile<[u8; 24]>,
+    isfr: Volatile<u32>,
 }
 
 impl Port {
@@ -37,13 +38,10 @@ impl Port {
         }
     }
 
-    pub unsafe fn set_pin_mode(&mut self, p: usize, mut mode: u32) {
-        let mut pcr = core::ptr::read_volatile(&self.pcr[p]);
-        pcr &= !0x0000_0700;
-        mode &= 0x0000_0007;
-        mode <<= 8;
-        pcr |= mode;
-        core::ptr::write_volatile(&mut self.pcr[p], pcr);
+    pub unsafe fn set_pin_mode(&mut self, p: usize, mode: u32) {
+        self.pcr[p].update(|pcr| {
+            pcr.set_bits(8..=10, mode & 0b111); /* Update MUX field */
+        });
     }
 
     pub fn name(&self) -> PortName {
@@ -65,12 +63,12 @@ impl Port {
 
 #[repr(C, packed)]
 struct GpioBitband {
-    pdor: [u32; 32],
-    psor: [u32; 32],
-    pcor: [u32; 32],
-    ptor: [u32; 32],
-    pdir: [u32; 32],
-    pddr: [u32; 32],
+    pdor: [Volatile<u32>; 32],
+    psor: [Volatile<u32>; 32],
+    pcor: [Volatile<u32>; 32],
+    ptor: [Volatile<u32>; 32],
+    pdir: [Volatile<u32>; 32],
+    pddr: [Volatile<u32>; 32],
 }
 
 pub struct Gpio {
@@ -108,39 +106,41 @@ impl Gpio {
 
     pub fn input(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).pddr[self.pin], 0);
+            (*self.gpio).pddr[self.pin].write(0);
         }
     }
 
     pub fn output(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).pddr[self.pin], 1);
+            (*self.gpio).pddr[self.pin].write(1);
         }
     }
 
     /// before use call the `input` function
     pub fn read(&mut self) -> u32 {
-        unsafe { core::ptr::read_volatile(&mut (*self.gpio).pdir[self.pin]) }
+        unsafe {
+            (*self.gpio).pdir[self.pin].read()
+        }
     }
 
     /// before use call the `output` function
     pub fn high(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).psor[self.pin], 1);
+            (*self.gpio).psor[self.pin].write(1);
         }
     }
 
     /// before use call the `output` function
     pub fn low(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).pcor[self.pin], 1);
+            (*self.gpio).pcor[self.pin].write(1);
         }
     }
 
     /// before use call the `output` function
     pub fn toggle(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut (*self.gpio).ptor[self.pin], 1);
+            (*self.gpio).ptor[self.pin].write(1);
         }
     }
 }
