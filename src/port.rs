@@ -9,8 +9,16 @@ pub enum PortName {
     E,
 }
 
+/// doc/teensy_3.2.pdf - Page 221
+/// 11.1.4 Memory map and register definition
 #[repr(C, packed)]
 pub struct Port {
+    /// doc/teensy_3.2.pdf - Page 227
+    /// 11.14.1 Pin Control Register n (PORTx_PCRn)
+
+    /* One for each pin on this port
+       Bits 8-10 : MUX
+    */
     pcr: [u32; 32],
     gpclr: u32,
     gpchr: u32,
@@ -88,11 +96,11 @@ impl Pin {
 impl Gpio {
     pub unsafe fn new(port: PortName, pin: usize) -> Gpio {
         let gpio = match port {
-            PortName::A => 0x43FE_0600 as *mut GpioBitband,
+            PortName::A => 0x43FE_0000 as *mut GpioBitband,
             PortName::B => 0x43FE_0800 as *mut GpioBitband,
             PortName::C => 0x43FE_1000 as *mut GpioBitband,
-            PortName::D => 0x43FE_1200 as *mut GpioBitband,
-            PortName::E => 0x43FE_1400 as *mut GpioBitband,    
+            PortName::D => 0x43FE_1800 as *mut GpioBitband,
+            PortName::E => 0x43FE_2000 as *mut GpioBitband,
         };
 
         Gpio { gpio, pin }

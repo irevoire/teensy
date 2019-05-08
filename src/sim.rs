@@ -1,11 +1,16 @@
 use bit_field::BitField;
 use volatile::Volatile;
 
+/// doc/teensy_3.2.pdf - Page 235
+/// System Integration Module (SIM)
+
 #[derive(Clone, Copy)]
 pub enum Clock {
     PortC,
 }
 
+/// doc/teensy_3.2.pdf - Page 236
+/// SIM memory map
 #[repr(C, packed)]
 pub struct Sim {
     sopt1: Volatile<u32>,
@@ -21,7 +26,7 @@ pub struct Sim {
     sdid: Volatile<u32>,
     _pad4: Volatile<[u32; 3]>,
     scgc4: Volatile<u32>,
-    scgc5: Volatile<u32>,
+    scgc5: Volatile<u32>, /* clock gating control registers  */
     scgc6: Volatile<u32>,
     scgc7: Volatile<u32>,
     clkdiv1: Volatile<u32>,
