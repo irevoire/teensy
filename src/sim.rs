@@ -6,7 +6,11 @@ use volatile::Volatile;
 
 #[derive(Clone, Copy)]
 pub enum Clock {
+    PortA,
+    PortB,
     PortC,
+    PortD,
+    PortE,
 }
 
 /// doc/teensy_3.2.pdf - Page 236
@@ -47,9 +51,29 @@ impl Sim {
     pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {
             match clock {
+                Clock::PortA => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(9, true);
+                    });
+                }
+                Clock::PortB => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(10, true);
+                    });
+                }
                 Clock::PortC => {
                     self.scgc5.update(|scgc5| {
                         scgc5.set_bit(11, true);
+                    });
+                }
+                Clock::PortD => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(12, true);
+                    });
+                }
+                Clock::PortE => {
+                    self.scgc5.update(|scgc5| {
+                        scgc5.set_bit(13, true);
                     });
                 }
             }
