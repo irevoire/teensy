@@ -42,7 +42,9 @@ extern "C" fn __boot() {
         panic!("Somehow the clock wasn't in FEI mode");
     }
 
-    main();
+    unsafe {
+        main();
+    }
 
     loop {}
 }
