@@ -4,6 +4,7 @@
 #![no_main]
 
 mod boot;
+mod interrupts;
 mod mcg;
 mod osc;
 mod port;
@@ -20,7 +21,7 @@ fn sleep() {
 }
 
 #[no_mangle]
-extern "C" fn main() {
+fn main() {
     let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
 
     let mut gpio = pin.make_gpio();
