@@ -1,6 +1,10 @@
-use core::arch::arm::__nop;
+//! # Watchdog
+//! The watchdog is a piece of hardware which will reset the microcontroller unless the running
+//! application “checks in” in a certain interval. It’s designed to restart crashed or hung
+//! programs. Currently we can only disable it.
 
 use bit_field::BitField;
+use core::arch::arm::__nop;
 use volatile::Volatile;
 
 #[repr(C, packed)]
