@@ -9,12 +9,24 @@
 //! * Helper to handle the gpio pins
 //!
 //! # Quick start
-//! ## Add the crate as a dependency
-//! Currently the crate is still in heavy development so there is no release on crate.io.
+//! ## Prepare your environment
+//! - Add the crate as a dependency
+//! Currently the crate is still under heavy development so there is no release on crate.io.
 //! To include this crate in your project add this line to the dependency section of your
 //! `Cargo.toml` file:
 //! ```toml
 //! teensy = { git = "https://github.com/irevoire/teensy.git"}
+//! ```
+//! - Nightly rust
+//! Finally to compile with this crate you need to use the nightly channel, just run:
+//! ```bash
+//! % rustup override set nightly
+//! ```
+//! - The correct target
+//! You’ll not compile your code for the casual x86 assembly. You'll need to install a new target
+//! for arm processor:
+//! ```bash
+//! %rustup target add thumbv7em-none-eabi
 //! ```
 //!
 //! ## Compile with this crate
@@ -63,12 +75,6 @@
 //! rustflags = [
 //! 	"-C", "link-arg=-Tlayout.ld",
 //! ]
-//! ```
-//!
-//! ### Nightly rust
-//! Finally to compile with this crate you need to use the nightly channel, just run:
-//! ```bash
-//! % rustup override set nightly
 //! ```
 //!
 //! ## Code with this crate
