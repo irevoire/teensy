@@ -1,8 +1,10 @@
+//! # System Integration Module (SIM)
+//! doc/teensy_3.2.pdf - Page 235
+//!
+//! The SIM is used to enable the appropriate clock gate to enable our I/O ports.
+
 use bit_field::BitField;
 use volatile::Volatile;
-
-/// doc/teensy_3.2.pdf - Page 235
-/// System Integration Module (SIM)
 
 #[derive(Clone, Copy)]
 pub enum Clock {
@@ -44,17 +46,15 @@ pub struct Sim {
 }
 
 impl Sim {
+    /// Base address to create the struct found at doc/teensy_3.2.pdf - Page 236
     pub unsafe fn new() -> &'static mut Sim {
-        /* Base address of the struct found
-        at doc/teensy_3.2.pdf - Page 236 */
         &mut *(0x4004_7000 as *mut Sim)
     }
 
+    /// Clock gating control bits found at doc/teensy_3.2.pdf - page 254
     pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {
             match clock {
-                /* Clock gating control bits found at
-                    doc/teensy_3.2.pdf - page 254  */
                 Clock::PortA => {
                     self.scgc5.update(|scgc5| {
                         scgc5.set_bit(9, true);
@@ -84,10 +84,9 @@ impl Sim {
         }
     }
 
+    /// 12.2.15 System Clock Divider Register 1 found at doc/teensy_3.2.pdf - page 259
     pub fn set_dividers(&mut self, core: u32, bus: u32, flash: u32) {
         let mut clkdiv: u32 = 0;
-        /* 12.2.15 System Clock Divider Register 1
-          found at doc/teensy_3.2.pdf - page 259 */
         clkdiv.set_bits(28..32, core - 1);
         clkdiv.set_bits(24..28, bus - 1);
         clkdiv.set_bits(16..20, flash - 1);

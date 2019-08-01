@@ -1,3 +1,40 @@
+//! There are two ways to access the GPIO registers. The first is through a block of 32-bit
+//! registers, associated with a port. It looks something like this:
+//! ```rust
+//! #[repr(C,packed)]
+//! struct Gpio {
+//!     pdor: u32,
+//!     psor: u32,
+//!     pcor: u32,
+//!     ptor: u32,
+//!     pdir: u32,
+//!     pddr: u32
+//! }
+//! ```
+//!
+//! This is very convenient to work with, but has an unfortunate flaw. Each of the fields
+//! represents all 32 pins in a Port. This means that any pin changes are subject to a race
+//! condition during our read/modify/write process. Pins that are owned by a separate piece of
+//! code can have an impact on how our pin behaves.
+//! Fortunately, ARM has a solution to this. We will take advantage of the bit-band alias.
+//! Bit-banding is a feature of certain ARM processors that maps a memory region to one 32 times
+//! as large. Each 32-bit word of this larger regions maps to a single bit of the original region.
+//! This gives us the capability to set or clear a single bit at a time, without risk of race
+//! conditions. If we visualized this as a rust struct, the bit-band alias for the GPIO would look
+//! like this:
+//! ```rust
+//! #[repr(C,packed)]
+//! struct GpioBitband {
+//!     pdor: [u32; 32],
+//!     psor: [u32; 32],
+//!     pcor: [u32; 32],
+//!     ptor: [u32; 32],
+//!     pdir: [u32; 32],
+//!     pddr: [u32; 32]
+//! }
+//! ```
+//!
+
 use bit_field::BitField;
 use volatile::Volatile;
 
@@ -10,12 +47,12 @@ pub enum PortName {
     E,
 }
 
-/// doc/teensy_3.2.pdf - Page 221
 /// 11.1.4 Memory map and register definition
+/// doc/teensy_3.2.pdf - Page 221
 #[repr(C, packed)]
 pub struct Port {
-    /// doc/teensy_3.2.pdf - Page 227
     /// 11.14.1 Pin Control Register n (PORTx_PCRn)
+    /// doc/teensy_3.2.pdf - Page 227
 
     /* One for each pin on this port
        Bits 8-10 : MUX
