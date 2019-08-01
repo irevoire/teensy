@@ -1,5 +1,19 @@
+//! Here is the most important file of this crate.
+//! When you add this crate as a dependency it will move the bootloader to the good section. Enable
+//! **all** the port, the clock at 72MHz and disable the watchdog and **then** call your `main`.
+//! Right now if you don't want something you'll need to either disable it in your `main` or edit
+//! this crate.
+
 use crate::*;
 
+/// The first function to be executed by the teensy
+/// Enable all the clocks:
+/// - Core: 72MHz
+/// - Peripherals: 36MHz
+/// - Flash: 24MHz
+/// Enable all the ports clock gate. This may consume more power than what you need if you don't
+/// use all the ports.
+/// Disable the watchdog.
 #[no_mangle]
 extern "C" fn __boot() {
     let (wdog, sim, mcg, osc) = unsafe {
@@ -12,6 +26,7 @@ extern "C" fn __boot() {
     };
 
     wdog.disable();
+
     // Enable the crystal oscillator with 10pf of capacitance
     osc.enable(10);
     // Turn on all the port clock gate
@@ -53,6 +68,7 @@ extern "C" {
     fn _stack_top();
 }
 
+/// This is the Interrupt Descriptor Table
 #[link_section = ".vectors"]
 #[no_mangle]
 pub static _VECTORS: [unsafe extern "C" fn(); 112] = [
@@ -170,6 +186,7 @@ pub static _VECTORS: [unsafe extern "C" fn(); 112] = [
     interrupts::isr_ignore_no_args, // Reserved 111
 ];
 
+/// The bootloader
 #[link_section = ".flashconfig"]
 #[no_mangle]
 pub static _FLASHCONFIG: [u8; 16] = [

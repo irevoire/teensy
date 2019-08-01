@@ -141,18 +141,18 @@
 //! [here](https://github.com/irevoire/teensy_blink)
 //!
 
-/// This module provide all the needed functions to boot the teensy
+/// This module provide all the needed functions to boot the teensy.
 pub mod boot;
 pub mod interrupts;
-/// The Multipurpose Clock Generator
+/// The Multipurpose Clock Generator.
 pub mod mcg;
-/// The Oscillator Unit
+/// The Oscillator Unit.
 pub mod osc;
-/// Helper module to define easily panic function
+/// Helper module to define easily panic function.
 pub mod panic;
-/// The port, pins and gpio
+/// The port, pins and gpio.
 pub mod port;
-/// The System Integration Module
+/// The System Integration Module.
 pub mod sim;
 /// The watchdog is a piece of hardware which will reset the microcontroller unless the running
 /// application “checks in” in a certain interval.

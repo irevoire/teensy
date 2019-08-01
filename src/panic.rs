@@ -2,7 +2,7 @@
 //! The macro in this file will generate a function with the `#[panic_handler]` needed to compile
 //! your code.
 //! You can choose a comportement in the following macros.
-//! 
+//!
 //! If you want to create your own panic function you should use this signature:
 //! ```rust
 //! #[panic_handler]
@@ -23,17 +23,16 @@
 macro_rules! define_panic {
     (empty) => {
         empty_panic!();
-    }
+    };
 }
 
 /// A panic doing nothing
 #[macro_export]
 macro_rules! empty_panic {
     () => {
-#[panic_handler]
+        #[panic_handler]
         fn empty_panic(_pi: &core::panic::PanicInfo) -> ! {
             loop {}
         }
-    }
+    };
 }
-

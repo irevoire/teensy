@@ -53,7 +53,6 @@ pub enum PortName {
 pub struct Port {
     /// 11.14.1 Pin Control Register n (PORTx_PCRn)
     /// doc/teensy_3.2.pdf - Page 227
-
     /* One for each pin on this port
        Bits 8-10 : MUX
     */
@@ -157,9 +156,7 @@ impl Gpio {
 
     /// before use call the `input` function
     pub fn read(&mut self) -> u32 {
-        unsafe {
-            (*self.gpio).pdir[self.pin].read()
-        }
+        unsafe { (*self.gpio).pdir[self.pin].read() }
     }
 
     /// before use call the `output` function
