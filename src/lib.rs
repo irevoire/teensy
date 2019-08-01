@@ -104,10 +104,8 @@
 //! #![no_std]
 //! #![no_main]
 //!
-//! #[panic_handler]
-//! fn teensy_panic(_pi: &core::panic::PanicInfo) -> ! {
-//!     loop {}
-//! }
+//! // needed because we have no std to handle the panic
+//! teensy::define_panic!(empty);
 //!
 //! #[no_mangle]
 //! fn main() {
@@ -150,6 +148,8 @@ pub mod interrupts;
 pub mod mcg;
 /// The Oscillator Unit
 pub mod osc;
+/// Helper module to define easily panic function
+pub mod panic;
 /// The port, pins and gpio
 pub mod port;
 /// The System Integration Module

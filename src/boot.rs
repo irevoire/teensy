@@ -49,11 +49,6 @@ extern "C" fn __boot() {
     loop {}
 }
 
-#[panic_handler]
-fn teensy_panic(_pi: &core::panic::PanicInfo) -> ! {
-    loop {}
-}
-
 extern "C" {
     fn _stack_top();
 }
