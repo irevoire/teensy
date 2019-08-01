@@ -20,13 +20,13 @@
 //! - Nightly rust
 //! Finally to compile with this crate you need to use the nightly channel, just run:
 //! ```bash
-//! % rustup override set nightly
+//! rustup override set nightly
 //! ```
 //! - The correct target
 //! You’ll not compile your code for the casual x86 assembly. You'll need to install a new target
 //! for arm processor:
 //! ```bash
-//! %rustup target add thumbv7em-none-eabi
+//! rustup target add thumbv7em-none-eabi
 //! ```
 //!
 //! ## Compile with this crate
@@ -62,7 +62,6 @@
 //!     }
 //! }
 //! ```
-//! For more information on this script you can check the original script !(here)[layout.ld].
 //!
 //! ### Target
 //! In order to compile your code for the teensy you need to specify the architecture you are
@@ -118,8 +117,9 @@
 //! ```
 //!
 //! ### Complete example
-//! You can find a complete example of the setup blinking a led here:
-//! https://github.com/irevoire/teensy_blink
+//! You can find a complete example of the setup blinking a led
+//! [here](https://github.com/irevoire/teensy_blink)
+//!
 
 /// This module provide all the needed functions to boot the teensy
 pub mod boot;
