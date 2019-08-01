@@ -1,17 +1,15 @@
-BIN=teensy
-OUTDIR=target/thumbv7em-none-eabi/release
-HEX=$(OUTDIR)/$(BIN).hex
-ELF=$(OUTDIR)/$(BIN)
+OUTDIR=target/thumbv7em-none-eabi/release/examples
 
-all:: $(ELF)
+# You can build an example by doing `ex_blink` for example
+ex_%:
+	cargo build --release --example $*
 
-.PHONY: $(ELF)
-$(ELF):
-	cargo build --release
+# This build the hexadecimal version of an example
+%.hex: ex_%
+	arm-none-eabi-objcopy -O ihex ${OUTDIR}/$* ${OUTDIR}/$@
 
-$(HEX): $(ELF)
-	arm-none-eabi-objcopy -O ihex $(ELF) $(HEX)
-
-.PHONY: flash
-flash: $(HEX)
-	teensy_loader_cli -w -mmcu=mk20dx256 $(HEX) -v
+# This is the function used to flash your teensy3.2 with an example.
+# For example to flash the blink example you can run `flash_blink`.
+# All the accepted examples are in the examples directory
+flash_%: %.hex
+	teensy_loader_cli -w -mmcu=mk20dx256 ${OUTDIR}/$< -v
