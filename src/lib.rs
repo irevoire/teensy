@@ -4,7 +4,7 @@
 
 //! # Teensy
 //! This crate provide multiple helpers functions to manipulate the teensy in baremetal rust.
-//! Currently everything is tested on a teensy 2.3. It provide:
+//! Currently everything is tested on a teensy 3.2. It provide:
 //! * A bootloader
 //! * Helper to handle the gpio pins
 //!
@@ -114,7 +114,7 @@
 //! ```
 //!
 //! ## Flashing the Teensy
-//! We provide a Makefile to generate a binary for the teensy 2.3 and sending it using the
+//! We provide a Makefile to generate a binary for the teensy 3.2 and sending it using the
 //! `teensy_loader_cli` command:
 //! ```Makefile
 //! BIN=my_application
