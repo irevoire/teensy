@@ -9,20 +9,42 @@
 //! * Helper to handle the gpio pins
 //!
 //! # Quick start
+//! ## Get the dependencies
+//! - The targetted architecture
+//! ```sh
+//! # archlinux
+//! sudo pacman -S arm-none-eabi-binutils
+//! # ubuntu
+//! sudo apt install binutils-arm-none-eabi
+//! # macOS
+//! brew install gcc-arm-none-eabi
+//! ```
+//! - The loader to flash the teensy
+//! ```sh
+//! # archlinux aur
+//! yay -S teensy_loader_cli
+//! # or
+//! yaourt -S teensy_loader_cli
+//! # macOS
+//! brew install teensy_loader_cli
+//! ```
+//! For other distribution or if you want to avoid the aur package you can manually install it from
+//! [here](https://github.com/PaulStoffregen/teensy_loader_cli)
+//!
 //! ## Prepare your environment
-//! - Add the crate as a dependency
+//! 1. Add the crate as a dependency
 //! Currently the crate is still under heavy development so there is no release on crate.io.
 //! To include this crate in your project add this line to the dependency section of your
 //! `Cargo.toml` file:
 //! ```toml
 //! teensy = { git = "https://github.com/irevoire/teensy.git"}
 //! ```
-//! - Nightly rust
+//! 2. Nightly rust
 //! Finally to compile with this crate you need to use the nightly channel, just run:
 //! ```bash
 //! rustup override set nightly
 //! ```
-//! - The correct target
+//! 3. The correct target
 //! You’ll not compile your code for the casual x86 assembly. You'll need to install a new target
 //! for arm processor:
 //! ```bash
@@ -82,7 +104,7 @@
 //! #![no_std]
 //! #![no_main]
 //!
-//!#[panic_handler]
+//! #[panic_handler]
 //! fn teensy_panic(_pi: &core::panic::PanicInfo) -> ! {
 //!     loop {}
 //! }
