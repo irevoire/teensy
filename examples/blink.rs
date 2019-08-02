@@ -7,15 +7,6 @@ use teensy::*;
 define_panic!(empty);
 
 #[no_mangle]
-fn sleep() {
-    for _ in 0..200000 {
-        unsafe {
-            core::arch::arm::__nop();
-        }
-    }
-}
-
-#[no_mangle]
 fn main() {
     let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
 
@@ -24,9 +15,7 @@ fn main() {
     gpio.output();
 
     loop {
-        sleep();
-        sleep();
-        sleep();
         gpio.toggle();
+        sleep::sleep_ms(500);
     }
 }

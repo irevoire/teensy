@@ -158,6 +158,10 @@ pub mod sim;
 /// application “checks in” in a certain interval.
 pub mod watchdog;
 
+// I think the next modules should be moved to a kindof "common" module
+/// Implementation of the sleep function
+pub mod sleep;
+
 /// The only function you will need to implements
 extern "Rust" {
     fn main();

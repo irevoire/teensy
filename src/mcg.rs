@@ -3,6 +3,9 @@ use core::mem;
 use bit_field::BitField;
 use volatile::Volatile;
 
+/// TODO This value should not be hardcoded and should change depending on the choosen frequency
+pub const F_CPU: u32 = 72000000;
+
 #[repr(C, packed)]
 pub struct Mcg {
     c1: Volatile<u8>,
