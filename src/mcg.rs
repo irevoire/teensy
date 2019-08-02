@@ -4,7 +4,7 @@ use bit_field::BitField;
 use volatile::Volatile;
 
 /// TODO This value should not be hardcoded and should change depending on the choosen frequency
-pub const F_CPU: u32 = 72000000;
+pub const F_CPU: u32 = 72_000_000;
 
 #[repr(C, packed)]
 pub struct Mcg {
@@ -26,7 +26,7 @@ pub struct Mcg {
 
 impl Mcg {
     pub unsafe fn new() -> &'static mut Mcg {
-        &mut *(0x40064000 as *mut Mcg)
+        &mut *(0x4006_4000 as *mut Mcg)
     }
 }
 

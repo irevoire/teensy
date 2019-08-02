@@ -61,7 +61,7 @@ extern "C" fn __boot() {
         main();
     }
 
-    loop {}
+    core::panic!("Came out of main");
 }
 
 extern "C" {

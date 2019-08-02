@@ -7,7 +7,7 @@ pub struct Osc {
 
 impl Osc {
     pub unsafe fn new() -> &'static mut Osc {
-        &mut *(0x40065000 as *mut Osc)
+        &mut *(0x4006_5000 as *mut Osc)
     }
 
     pub fn enable(&mut self, capacitance: u8) {

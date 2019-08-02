@@ -1,9 +1,9 @@
 pub unsafe extern "C" fn isr_panic(_level: u8) -> ! {
-    loop {}
+    core::panic!();
 }
 
-pub unsafe extern "C" fn isr_ignore(_level: u8) -> () {}
-pub unsafe extern "C" fn isr_ignore_no_args() -> () {}
+pub unsafe extern "C" fn isr_ignore(_level: u8) {}
+pub unsafe extern "C" fn isr_ignore_no_args() {}
 
 pub unsafe extern "C" fn isr_non_maskable() {
     isr_panic(2)

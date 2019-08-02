@@ -25,7 +25,7 @@ pub struct Watchdog {
 
 impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
-        &mut *(0x40052000 as *mut Watchdog)
+        &mut *(0x4005_2000 as *mut Watchdog)
     }
 
     pub fn disable(&mut self) {
