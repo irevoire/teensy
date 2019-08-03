@@ -279,3 +279,117 @@ impl Gpio {
         }
     }
 }
+
+/// This macro is an helper to create pin by the name they have on the little flyer you got when
+/// you bought your teensy.
+/// You can create your pin with name like:
+/// - 23
+/// - A8
+/// - TX2
+/// - DOUT
+/// - SCL0
+#[macro_export]
+macro_rules! make_pin {
+    (led) => {
+        teensy::port::Port::new(teensy::port::PortName::C).pin(6)
+    };
+    (A17) => {
+        teensy::port::Pin::new(28)
+    };
+    (A16) => {
+        teensy::port::Pin::new(27)
+    };
+    (A15) => {
+        teensy::port::Pin::new(26)
+    };
+    (A18) => {
+        teensy::port::Pin::new(29)
+    };
+    (SCL1) => {
+        teensy::port::Pin::new(29)
+    };
+    (A19) => {
+        teensy::port::Pin::new(30)
+    };
+    (SDA1) => {
+        teensy::port::Pin::new(30)
+    };
+    (A20) => {
+        teensy::port::Pin::new(31)
+    };
+    (A9) => {
+        teensy::port::Pin::new(23)
+    };
+    (A8) => {
+        teensy::port::Pin::new(22)
+    };
+    (A7) => {
+        teensy::port::Pin::new(21)
+    };
+    (A6) => {
+        teensy::port::Pin::new(20)
+    };
+    (A5) => {
+        teensy::port::Pin::new(19)
+    };
+    (SCL0) => {
+        teensy::port::Pin::new(19)
+    };
+    (A4) => {
+        teensy::port::Pin::new(18)
+    };
+    (SDA0) => {
+        teensy::port::Pin::new(18)
+    };
+    (A3) => {
+        teensy::port::Pin::new(17)
+    };
+    (A2) => {
+        teensy::port::Pin::new(16)
+    };
+    (A1) => {
+        teensy::port::Pin::new(15)
+    };
+    (A0) => {
+        teensy::port::Pin::new(14)
+    };
+    (RX) => {
+        teensy::port::Pin::new(3)
+    };
+    (TX) => {
+        teensy::port::Pin::new(4)
+    };
+    (RX1) => {
+        teensy::port::Pin::new(0)
+    };
+    (TX1) => {
+        teensy::port::Pin::new(1)
+    };
+    (RX2) => {
+        teensy::port::Pin::new(9)
+    };
+    (TX2) => {
+        teensy::port::Pin::new(10)
+    };
+    (RX3) => {
+        teensy::port::Pin::new(7)
+    };
+    (TX3) => {
+        teensy::port::Pin::new(8)
+    };
+    (CS) => {
+        teensy::port::Pin::new(10)
+    };
+    (DOUT) => {
+        teensy::port::Pin::new(11)
+    };
+    (DIN) => {
+        teensy::port::Pin::new(12)
+    };
+    (SCK) => {
+        teensy::port::Pin::new(13)
+    };
+    ($n:expr) => {
+        teensy::port::Pin::new($n)
+    };
+}
