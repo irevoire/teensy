@@ -229,9 +229,9 @@ impl Gpio {
         }
     }
 
-    /// Before use call the `input` function
+    /// Before use, call the `input` function
     /// ```rust
-    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(3) };
     /// let mut gpio = pin.make_gpio();
     /// gpio.input();
     /// gpio.read();
@@ -240,7 +240,7 @@ impl Gpio {
         unsafe { (*self.gpio).pdir[self.pin].read() }
     }
 
-    /// Before use call the `output` function
+    /// Before use, call the `output` function
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();
@@ -253,7 +253,7 @@ impl Gpio {
         }
     }
 
-    /// Before use call the `output` function
+    /// Before use, call the `output` function
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();
@@ -266,7 +266,7 @@ impl Gpio {
         }
     }
 
-    /// Before use call the `output` function
+    /// Before use, call the `output` function
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();

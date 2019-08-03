@@ -8,14 +8,14 @@ define_panic!(empty);
 
 #[no_mangle]
 fn main() {
-    let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    let led = unsafe { make_pin!(led) };
 
-    let mut gpio = pin.make_gpio();
+    let mut led = led.make_gpio();
 
-    gpio.output();
+    led.output();
 
     loop {
-        gpio.toggle();
+        led.toggle();
         sleep::sleep_ms(500);
     }
 }
