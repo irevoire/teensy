@@ -280,36 +280,33 @@ impl Gpio {
     }
 }
 
-/// This macro is a wrapper of the `make_pin` macro. It allow you to create multiple pin at the
-/// same time by returning a tuple with all the results.
+/// This macro is an helper to create pin easily. You can create your pins by the name they have on
+/// the little flyer you got when you bought your teensy. You can create your pin with name like:
 /// ```rust
-/// let (led, rx, tx) = make_pins!(led, rx, tx);
+/// let pin = make_pin!(led);
+/// let pin = make_pin!(23);
+/// let pin = make_pin!(A8);
+/// let pin = make_pin!(TX2);
+/// let pin = make_pin!(DOUT);
+/// let pin = make_pin!(SCL0);
+/// let pin = make_pin!(PTD3); // from the schematic view
 /// ```
-/// To use this macro you need to put the `make_pin` macro in scope.
+/// You can also call this macro with multiple arguments. In this case it'll generate a tuple:
+/// ```rust
+/// let (pin5, led, tx, a8) = make_pin!(5, led, TX3, A8);
+/// ```
+/// **This macro is unsafe**
 #[macro_export]
-macro_rules! make_pins {
-    ($($p:tt),*) => {
+macro_rules! make_pin {
+    // for each element in the call apply the following match
+    ($p:tt, $($tail:tt),+) => {
         (
-            $(
-                make_pin!($p)
+            make_pin!($p),
+            $( // here we iterate element per element so we should not have recursion
+                make_pin!($tail)
             ),*
         )
     };
-}
-
-/// This macro is an helper to create pin by the name they have on the little flyer you got when
-/// you bought your teensy.
-/// You can create your pin with name like:
-/// ```rust
-/// make_pin!(led);
-/// make_pin!(23);
-/// make_pin!(A8);
-/// make_pin!(TX2);
-/// make_pin!(DOUT);
-/// make_pin!(SCL0);
-/// ```
-#[macro_export]
-macro_rules! make_pin {
     // ===== special pin =====
     (led) => {
         teensy::port::Port::new(teensy::port::PortName::C).pin(6)
