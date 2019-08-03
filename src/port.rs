@@ -310,9 +310,11 @@ macro_rules! make_pins {
 /// ```
 #[macro_export]
 macro_rules! make_pin {
+    // ===== special pin =====
     (led) => {
         teensy::port::Port::new(teensy::port::PortName::C).pin(6)
     };
+    // ===== analog pins =====
     (A17) => {
         teensy::port::Pin::new(28)
     };
@@ -325,13 +327,7 @@ macro_rules! make_pin {
     (A18) => {
         teensy::port::Pin::new(29)
     };
-    (SCL1) => {
-        teensy::port::Pin::new(29)
-    };
     (A19) => {
-        teensy::port::Pin::new(30)
-    };
-    (SDA1) => {
         teensy::port::Pin::new(30)
     };
     (A20) => {
@@ -352,13 +348,7 @@ macro_rules! make_pin {
     (A5) => {
         teensy::port::Pin::new(19)
     };
-    (SCL0) => {
-        teensy::port::Pin::new(19)
-    };
     (A4) => {
-        teensy::port::Pin::new(18)
-    };
-    (SDA0) => {
         teensy::port::Pin::new(18)
     };
     (A3) => {
@@ -373,6 +363,20 @@ macro_rules! make_pin {
     (A0) => {
         teensy::port::Pin::new(14)
     };
+    // ===== I2C port =====
+    (SCL0) => {
+        teensy::port::Pin::new(19)
+    };
+    (SDA0) => {
+        teensy::port::Pin::new(18)
+    };
+    (SCL1) => {
+        teensy::port::Pin::new(29)
+    };
+    (SDA1) => {
+        teensy::port::Pin::new(30)
+    };
+    // ===== serial port =====
     (RX) => {
         teensy::port::Pin::new(3)
     };
@@ -397,6 +401,7 @@ macro_rules! make_pin {
     (TX3) => {
         teensy::port::Pin::new(8)
     };
+    // ===== SPI port =====
     (CS) => {
         teensy::port::Pin::new(10)
     };
@@ -409,6 +414,110 @@ macro_rules! make_pin {
     (SCK) => {
         teensy::port::Pin::new(13)
     };
+    // ===== Schematic view =====
+    (PTA4) => {
+        teensy::port::Pin::new(33)
+    };
+    (PTB18) => {
+        teensy::port::Pin::new(32)
+    };
+    (PTE0) => {
+        teensy::port::Pin::new(31)
+    };
+    (PTC11) => {
+        teensy::port::Pin::new(30)
+    };
+    (PTC10) => {
+        teensy::port::Pin::new(29)
+    };
+    (PTC8) => {
+        teensy::port::Pin::new(28)
+    };
+    (PTC9) => {
+        teensy::port::Pin::new(27)
+    };
+    (PTE1) => {
+        teensy::port::Pin::new(26)
+    };
+    (PTB19) => {
+        teensy::port::Pin::new(25)
+    };
+    (PTA5) => {
+        teensy::port::Pin::new(24)
+    };
+    (PTC2) => {
+        teensy::port::Pin::new(23)
+    };
+    (PTC1) => {
+        teensy::port::Pin::new(22)
+    };
+    (PTD6) => {
+        teensy::port::Pin::new(21)
+    };
+    (PTD5) => {
+        teensy::port::Pin::new(20)
+    };
+    (PTB2) => {
+        teensy::port::Pin::new(19)
+    };
+    (PTB3) => {
+        teensy::port::Pin::new(18)
+    };
+    (PTB1) => {
+        teensy::port::Pin::new(17)
+    };
+    (PTB0) => {
+        teensy::port::Pin::new(16)
+    };
+    (PTC0) => {
+        teensy::port::Pin::new(15)
+    };
+    (PTD1) => {
+        teensy::port::Pin::new(14)
+    };
+    (PTC5) => {
+        teensy::port::Pin::new(13)
+    };
+    (PTC7) => {
+        teensy::port::Pin::new(12)
+    };
+    (PTC6) => {
+        teensy::port::Pin::new(11)
+    };
+    (PTC4) => {
+        teensy::port::Pin::new(10)
+    };
+    (PTC3) => {
+        teensy::port::Pin::new(9)
+    };
+    (PTD3) => {
+        teensy::port::Pin::new(8)
+    };
+    (PTD2) => {
+        teensy::port::Pin::new(7)
+    };
+    (PTD4) => {
+        teensy::port::Pin::new(6)
+    };
+    (PTD7) => {
+        teensy::port::Pin::new(5)
+    };
+    (PTA13) => {
+        teensy::port::Pin::new(4)
+    };
+    (PTA12) => {
+        teensy::port::Pin::new(3)
+    };
+    (PTD0) => {
+        teensy::port::Pin::new(2)
+    };
+    (PTB17) => {
+        teensy::port::Pin::new(1)
+    };
+    (PTB16) => {
+        teensy::port::Pin::new(0)
+    };
+    // ===== digital pins =====
     ($n:expr) => {
         teensy::port::Pin::new($n)
     };
