@@ -280,14 +280,34 @@ impl Gpio {
     }
 }
 
+/// This macro is a wrapper of the `make_pin` macro. It allow you to create multiple pin at the
+/// same time by returning a tuple with all the results.
+/// ```rust
+/// let (led, rx, tx) = make_pins!(led, rx, tx);
+/// ```
+/// To use this macro you need to put the `make_pin` macro in scope.
+#[macro_export]
+macro_rules! make_pins {
+    ($($p:tt),*) => {
+        (
+            $(
+                make_pin!($p)
+            ),*
+        )
+    };
+}
+
 /// This macro is an helper to create pin by the name they have on the little flyer you got when
 /// you bought your teensy.
 /// You can create your pin with name like:
-/// - 23
-/// - A8
-/// - TX2
-/// - DOUT
-/// - SCL0
+/// ```rust
+/// make_pin!(led);
+/// make_pin!(23);
+/// make_pin!(A8);
+/// make_pin!(TX2);
+/// make_pin!(DOUT);
+/// make_pin!(SCL0);
+/// ```
 #[macro_export]
 macro_rules! make_pin {
     (led) => {
