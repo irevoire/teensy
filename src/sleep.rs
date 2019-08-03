@@ -7,7 +7,7 @@ use core::arch::arm::__nop;
 /// not properly work at all with anything below 5 MHz
 pub fn sleep_us(microseconds: u32) {
     (0..microseconds).for_each(|_| {
-        let mut inner = crate::mcg::F_CPU / 5000000;
+        let mut inner = crate::mcg::F_CPU / 5_000_000;
 
         // This loop should take 5 cycles
         while inner != 0 {
@@ -23,7 +23,7 @@ pub fn sleep_us(microseconds: u32) {
 /// as it runs uninterrupted.
 pub fn sleep_ms(milliseconds: u32) {
     (0..milliseconds).for_each(|_| {
-        let mut inner = crate::mcg::F_CPU / 10000;
+        let mut inner = crate::mcg::F_CPU / 10_000;
 
         // This loop should take 10 cycles:
         //  inner -= 1     sub: 1 cycle
