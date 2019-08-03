@@ -34,6 +34,26 @@
 //! }
 //! ```
 //!
+//! If you are here it's probably because you want to use some pins, here is the step you need to
+//! follow:
+//! 1. Identifiying in which port the pin you want to use is located, try looking at this
+//!    documents: [teensy schematic representation](https://github.com/irevoire/teensy/blob/master/doc/schematic.gif)
+//!    For example imagine we want to lighten up the led. On this document we can see that the led
+//!    is connected to the pin number 13 (on the top right). And at the base of this pin we can
+//!    read "PT C5", which means that the pin belongs to the port C and is the number 5.
+//!    We now know we want to use the: `port::PortName::C`.
+//! 2. Creating a port: `let port = port::Port::new(port::PortName::C)`
+//! 3. Consumming the port into the right pin: `let pin = port.pin(5)`
+//! 4. Choosing a mode for the pin, here we want to do normal gpio: `let mut led = pin.make_gpio()`
+//! 5. Configuring the pin; we want to write data in the pin: `gpio.output()`
+//! 6. Light the pin: `gpio.high()`
+//! 7. Enjoy 🎉
+//! ```rust
+//! let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+//! let mut gpio = pin.make_gpio();
+//! gpio.output();
+//! gpio.high();
+//! ```
 
 use bit_field::BitField;
 use volatile::Volatile;
@@ -55,7 +75,7 @@ pub struct Port {
     /// doc/teensy_3.2.pdf - Page 227
     /* One for each pin on this port
        Bits 8-10 : MUX
-    */
+       */
     pcr: [Volatile<u32>; 32],
     gpclr: Volatile<u32>,
     gpchr: Volatile<u32>,
@@ -64,6 +84,7 @@ pub struct Port {
 }
 
 impl Port {
+    /// Create a new port. Take a port name as argument.
     pub unsafe fn new(name: PortName) -> &'static mut Port {
         &mut *match name {
             PortName::A => 0x4004_9000 as *mut Port,
@@ -74,12 +95,15 @@ impl Port {
         }
     }
 
+    /// update the mode of the pin. You should not use this function directly and look if there is
+    /// a function handling this for you once you consummed your port into a pin (like `make_gpio`).
     pub unsafe fn set_pin_mode(&mut self, p: usize, mode: u32) {
         self.pcr[p].update(|pcr| {
             pcr.set_bits(8..=10, mode & 0b111); /* Update MUX field */
         });
     }
 
+    /// Retrieve the portname associated to the port
     pub fn name(&self) -> PortName {
         let addr = (self as *const Port) as u32;
         match addr {
@@ -92,6 +116,7 @@ impl Port {
         }
     }
 
+    /// Consume the port into a pin
     pub unsafe fn pin(&mut self, p: usize) -> Pin {
         Pin { port: self, pin: p }
     }
@@ -118,6 +143,7 @@ pub struct Pin {
 }
 
 impl Pin {
+    /// Put the pin in gpio mode and consume the pin into a gpio
     pub fn make_gpio(self) -> Gpio {
         unsafe {
             let port = &mut *self.port;
@@ -128,6 +154,10 @@ impl Pin {
 }
 
 impl Gpio {
+    /// Create a Gpio. Before calling this function you should ensure that your pin is already in
+    /// gpio mode. Prefer using function like `make_gpio` instead of calling this one directly.
+    /// TODO: maybe we should move the `set_pin_mode` call from `make_gpio` to this function.
+    /// This would allow direct call to this function
     pub unsafe fn new(port: PortName, pin: usize) -> Gpio {
         let gpio = match port {
             PortName::A => 0x43FE_0000 as *mut GpioBitband,
@@ -140,40 +170,64 @@ impl Gpio {
         Gpio { gpio, pin }
     }
 
-    /// switch the pin in input mode (can read but not write)
+    /// Switch the pin in input mode (can read but not write)
     pub fn input(&mut self) {
         unsafe {
             (*self.gpio).pddr[self.pin].write(0);
         }
     }
 
-    /// switch the pin in output mode (can write but not read)
+    /// Switch the pin in output mode (can write but not read)
     pub fn output(&mut self) {
         unsafe {
             (*self.gpio).pddr[self.pin].write(1);
         }
     }
 
-    /// before use call the `input` function
+    /// Before use call the `input` function
+    /// ```rust
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    /// let mut gpio = pin.make_gpio();
+    /// gpio.input();
+    /// gpio.read();
+    /// ```
     pub fn read(&mut self) -> u32 {
         unsafe { (*self.gpio).pdir[self.pin].read() }
     }
 
-    /// before use call the `output` function
+    /// Before use call the `output` function
+    /// ```rust
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    /// let mut gpio = pin.make_gpio();
+    /// gpio.output();
+    /// gpio.high();
+    /// ```
     pub fn high(&mut self) {
         unsafe {
             (*self.gpio).psor[self.pin].write(1);
         }
     }
 
-    /// before use call the `output` function
+    /// Before use call the `output` function
+    /// ```rust
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    /// let mut gpio = pin.make_gpio();
+    /// gpio.output();
+    /// gpio.low();
+    /// ```
     pub fn low(&mut self) {
         unsafe {
             (*self.gpio).pcor[self.pin].write(1);
         }
     }
 
-    /// before use call the `output` function
+    /// Before use call the `output` function
+    /// ```rust
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
+    /// let mut gpio = pin.make_gpio();
+    /// gpio.output();
+    /// gpio.toggle();
+    /// ```
     pub fn toggle(&mut self) {
         unsafe {
             (*self.gpio).ptor[self.pin].write(1);
