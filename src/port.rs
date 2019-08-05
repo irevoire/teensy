@@ -309,7 +309,7 @@ macro_rules! make_pin {
     };
     // ===== special pin =====
     (led) => {
-        teensy::port::Port::new(teensy::port::PortName::C).pin(6)
+        teensy::port::Port::new(teensy::port::PortName::C).pin(5)
     };
     // ===== analog pins =====
     (A17) => {
