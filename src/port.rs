@@ -96,10 +96,26 @@ impl Port {
     }
 
     /// update the mode of the pin. You should not use this function directly and look if there is
-    /// a function handling this for you once you consummed your port into a pin (like `make_gpio`).
+    /// a function handling this for you once you consumed your port into a pin (like `make_gpio`).
     pub unsafe fn set_pin_mode(&mut self, p: usize, mode: u32) {
         self.pcr[p].update(|pcr| {
             pcr.set_bits(8..=10, mode & 0b111); /* Update MUX field */
+        });
+    }
+
+    /// enable pull resistor
+    pub unsafe fn set_pin_pe(&mut self, p: usize, mode: bool) {
+        assert!(p < 32);
+        self.pcr[p].update(|pcr| {
+            pcr.set_bit(1, mode);
+        });
+    }
+
+    /// if pull resistor is enabled, pull up (1) or pull down (0)
+    pub unsafe fn set_pin_ps(&mut self, p: usize, mode: bool) {
+        assert!(p < 32);
+        self.pcr[p].update(|pcr| {
+            pcr.set_bit(0, mode);
         });
     }
 
@@ -138,8 +154,8 @@ pub struct Gpio {
 }
 
 pub struct Pin {
-    port: *mut Port,
-    pin: usize,
+    pub port: *mut Port,
+    pub pin: usize,
 }
 
 impl Pin {

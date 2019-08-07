@@ -4,7 +4,7 @@
 
 use teensy::*;
 
-define_panic!(empty);
+define_panic!{empty}
 
 #[no_mangle]
 fn main() {

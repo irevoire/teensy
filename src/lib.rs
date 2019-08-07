@@ -105,7 +105,7 @@
 //! #![no_main]
 //!
 //! // needed because we have no std to handle the panic
-//! teensy::define_panic!(empty);
+//! teensy::define_panic!{empty}
 //!
 //! #[no_mangle]
 //! fn main() {

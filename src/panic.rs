@@ -11,13 +11,13 @@
 //!
 //! If you want to include one of the already defined panic in your code use:
 //! ```rust
-//! teensy::define_panic!(empty);
+//! teensy::define_panic!{empty}
 //! ```
 
 /// Helper macro to call the other panic macro
 /// Use it like that:
 /// ```rust
-/// teensy::define_panic!(empty);
+/// teensy::define_panic!{empty}
 /// ```
 #[macro_export]
 macro_rules! define_panic {

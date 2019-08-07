@@ -64,16 +64,11 @@ extern "C" fn __boot() {
     core::panic!("Came out of main");
 }
 
-extern "C" {
-    fn _stack_top();
-}
-
 /// This is the Interrupt Descriptor Table
-#[link_section = ".vectors"]
+#[link_section = ".vector_table.interrupts"]
 #[no_mangle]
-pub static _VECTORS: [unsafe extern "C" fn(); 112] = [
-    _stack_top,
-    __boot,
+pub static _INTERRUPTS: [unsafe extern "C" fn(); 111] = [
+    __boot, // TODO: Move this to a different vector?
     interrupts::isr_non_maskable,
     interrupts::isr_hard_fault,
     interrupts::isr_memmanage_fault,
@@ -186,9 +181,16 @@ pub static _VECTORS: [unsafe extern "C" fn(); 112] = [
     interrupts::isr_ignore_no_args, // Reserved 111
 ];
 
-/// The bootloader
+/// Flash configuration
+/// Controls how the flash can be read or written.
+///  The Teensy bootloader makes assumptions about these values, so
+/// we will use the same set of bytes as the Teensy Arduino tooling.
+/// Specifically, we disable all flash security through the FSEC
+/// field, and tell the processor to boot into high-power mode with FOPT.
 #[link_section = ".flashconfig"]
 #[no_mangle]
 pub static _FLASHCONFIG: [u8; 16] = [
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xDE, 0xF9, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xDE, 0xF9, 0xFF, 0xFF,
+    //                      FSEC, FOPT
 ];

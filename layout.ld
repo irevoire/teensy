@@ -14,25 +14,37 @@
 MEMORY
 {
 	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
+	/*think about splitting up the RAM into SRAM_U and SRAM_L*/
 	RAM  (rwx) : ORIGIN = 0x1FFF8000, LENGTH = 64K
 }
 
+EXTERN(_INTERRUPTS);
+
 SECTIONS
 {
+    PROVIDE(_stack_top = ORIGIN(RAM) + LENGTH(RAM));
+
+    .vector_table ORIGIN(FLASH) : {
+        /* Initial stack pointer */
+        LONG(_stack_top);
+
+        /* Interrupts */
+        KEEP(*(.vector_table.interrupts));
+    } > FLASH
+
+
+
 	.text : {
-		. = 0;
-		KEEP(*(.vectors))
 		. = 0x400;
 		KEEP(*(.flashconfig*))
 		. = ALIGN(4);
 		*(.text*)
     } > FLASH = 0xFF
 
-    .rodata : {
-	    *(.rodata*)
+    .rodata : ALIGN(4){
+	    *(.rodata .rodata.*);
+	    . = ALIGN(4);
     } > FLASH
-
-    _stack_top = ORIGIN(RAM) + LENGTH(RAM);
 
     /DISCARD/ : {
 	    *(.ARM.*)
