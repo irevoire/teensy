@@ -3,14 +3,12 @@
 #![no_main]
 
 use teensy::*;
-use teensy::port::Pin;
-use teensy::port::Port;
 
 define_panic!{empty}
 
 #[no_mangle]
 fn main() {
-    let (mut led, mut pin): (Pin, Pin) = unsafe { make_pin!(led, 3) };
+    let (led, pin) = unsafe { make_pin!(led, 3) };
 
     // TODO: make this safe
     unsafe {
