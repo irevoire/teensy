@@ -12,8 +12,11 @@ define_panic!{empty}
 fn main() {
     let (mut led, mut pin): (Pin, Pin) = unsafe { make_pin!(led, 3) };
 
-    let mut led = led.make_gpio();
-    let mut pin = pin.make_gpio();
+    // TODO: make this safe
+    unsafe {
+        (pin.port.as_mut().unwrap()).set_pin_pe(pin.pin, true);
+        (pin.port.as_mut().unwrap()).set_pin_ps(pin.pin, false);
+    }
 
     let mut led_out = led.make_gpio();
     let mut pin_in = pin.make_gpio();
