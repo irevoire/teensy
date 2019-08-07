@@ -3,15 +3,14 @@
 #![no_main]
 
 use teensy::*;
-use teensy::port::Pin;
 
 define_panic!{empty}
 
 #[no_mangle]
 fn main() {
-    let led : Pin = unsafe { make_pin!(led) };
+    let led = unsafe { make_pin!(led) };
 
-    let mut led_out = led.make_gpio();
+    let mut led = led.make_gpio();
 
     led.output();
 
