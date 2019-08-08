@@ -1,9 +1,12 @@
 use super::gpio::Gpio;
 use super::port::{Port, PortName};
+use bit_field::BitField;
+use volatile::Volatile;
 
 pub struct Pin {
-    pub port: *mut Port,
-    pub pin: usize,
+    pub portname: PortName,
+    pub id: usize,
+    pub pcr: &'static mut Volatile<u32>, // pcr should point to a part of port
 }
 
 impl Pin {
@@ -52,12 +55,33 @@ impl Pin {
         }
     }
 
+    /// update the mode of the pin. You should not use this function directly and look if there is
+    /// a function handling this for you once you consumed your port into a pin (like `make_gpio`).
+    pub unsafe fn set_pin_mode(&mut self, mode: u32) {
+        self.pcr.update(|pcr| {
+            pcr.set_bits(8..=10, mode & 0b111); /* Update MUX field */
+        });
+    }
+
+    /// enable pull resistor
+    pub unsafe fn set_pin_pe(&mut self, mode: bool) {
+        self.pcr.update(|pcr| {
+            pcr.set_bit(1, mode);
+        });
+    }
+
+    /// if pull resistor is enabled, pull up (1) or pull down (0)
+    pub unsafe fn set_pin_ps(&mut self, mode: bool) {
+        self.pcr.update(|pcr| {
+            pcr.set_bit(0, mode);
+        });
+    }
+
     /// Put the pin in gpio mode and consume the pin into a gpio
-    pub fn make_gpio(self) -> Gpio {
+    pub fn make_gpio(mut self) -> Gpio {
         unsafe {
-            let port = &mut *self.port;
-            port.set_pin_mode(self.pin, 1);
-            Gpio::new(port.name(), self.pin)
+            self.set_pin_mode(1);
+            Gpio::new(self)
         }
     }
 }
