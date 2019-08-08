@@ -64,4 +64,4 @@ mod gpio;
 mod pin;
 mod port;
 
-pub mod helpers;
+pub mod macros;
