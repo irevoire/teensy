@@ -78,10 +78,7 @@ impl Pin {
     }
 
     /// Put the pin in gpio mode and consume the pin into a gpio
-    pub fn make_gpio(mut self) -> Gpio {
-        unsafe {
-            self.set_pin_mode(1);
-            Gpio::new(self)
-        }
+    pub fn make_gpio(self) -> Gpio {
+        unsafe { Gpio::new(self) }
     }
 }
