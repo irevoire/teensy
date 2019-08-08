@@ -4,16 +4,15 @@
 
 use teensy::*;
 
-define_panic!{empty}
+define_panic! {empty}
 
 #[no_mangle]
 fn main() {
-    let (led, pin) = unsafe { make_pin!(led, 3) };
+    let (led, mut pin) = unsafe { make_pin!(led, 1) };
 
-    // TODO: make this safe
     unsafe {
-        (pin.port.as_mut().unwrap()).set_pin_pe(pin.pin, true);
-        (pin.port.as_mut().unwrap()).set_pin_ps(pin.pin, false);
+        pin.set_pin_pe(true);
+        pin.set_pin_ps(false);
     }
 
     let mut led_out = led.make_gpio();

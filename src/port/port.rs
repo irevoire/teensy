@@ -1,5 +1,4 @@
 use super::pin::Pin;
-use bit_field::BitField;
 use volatile::Volatile;
 
 #[derive(Clone, Copy)]
@@ -20,7 +19,7 @@ pub struct Port {
     /* One for each pin on this port
     Bits 8-10 : MUX
     */
-    pcr: [Volatile<u32>; 32],
+    pub pcr: [Volatile<u32>; 32],
     gpclr: Volatile<u32>,
     gpchr: Volatile<u32>,
     _reserved: Volatile<[u8; 24]>,
@@ -39,30 +38,6 @@ impl Port {
         }
     }
 
-    /// update the mode of the pin. You should not use this function directly and look if there is
-    /// a function handling this for you once you consumed your port into a pin (like `make_gpio`).
-    pub unsafe fn set_pin_mode(&mut self, p: usize, mode: u32) {
-        self.pcr[p].update(|pcr| {
-            pcr.set_bits(8..=10, mode & 0b111); /* Update MUX field */
-        });
-    }
-
-    /// enable pull resistor
-    pub unsafe fn set_pin_pe(&mut self, p: usize, mode: bool) {
-        assert!(p < 32);
-        self.pcr[p].update(|pcr| {
-            pcr.set_bit(1, mode);
-        });
-    }
-
-    /// if pull resistor is enabled, pull up (1) or pull down (0)
-    pub unsafe fn set_pin_ps(&mut self, p: usize, mode: bool) {
-        assert!(p < 32);
-        self.pcr[p].update(|pcr| {
-            pcr.set_bit(0, mode);
-        });
-    }
-
     /// Retrieve the portname associated to the port
     pub fn name(&self) -> PortName {
         let addr = (self as *const Port) as u32;
@@ -77,7 +52,13 @@ impl Port {
     }
 
     /// Consume the port into a pin
-    pub unsafe fn pin(&mut self, p: usize) -> Pin {
-        Pin { port: self, pin: p }
+    /// The pin keep a reference to it's pcr field
+    pub unsafe fn pin(&'static mut self, p: usize) -> Pin {
+        assert!(p < 32);
+        Pin {
+            portname: self.name(),
+            pcr: &mut self.pcr[p],
+            id: p,
+        }
     }
 }
