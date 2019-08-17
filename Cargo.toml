@@ -1,6 +1,7 @@
 [package]
 name = "teensy"
-version = "0.1.0"
+version = "0.0.0"
+categories = ["embedded", "no-std"]
 authors = [
 	"Thomas Campistron <irevoire@hotmail.fr>",
 	"Debilausaure",
@@ -10,3 +11,7 @@ edition = "2018"
 [dependencies]
 volatile = "*"
 bit_field = "*"
+
+[features]
+default = []
+manual_init = []
