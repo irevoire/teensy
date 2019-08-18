@@ -61,29 +61,32 @@
 //! 	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
 //! 	RAM  (rwx) : ORIGIN = 0x1FFF8000, LENGTH = 64K
 //! }
-//!
+//! EXTERN(_INTERRUPTS);
 //! SECTIONS
 //! {
+//!     PROVIDE(_stack_top = ORIGIN(RAM) + LENGTH(RAM));
+//!     .vector_table ORIGIN(FLASH) : {
+//!         LONG(_stack_top);
+//!         KEEP(*(.vector_table.interrupts));
+//!     } > FLASH
 //! 	.text : {
-//! 		. = 0;
-//! 		KEEP(*(.vectors))
 //! 		. = 0x400;
 //! 		KEEP(*(.flashconfig*))
 //! 		. = ALIGN(4);
 //! 		*(.text*)
 //!     } > FLASH = 0xFF
-//!
-//!     .rodata : {
-//! 	    *(.rodata*)
+//!     .rodata : ALIGN(4){
+//! 	    *(.rodata .rodata.*);
+//! 	    . = ALIGN(4);
 //!     } > FLASH
-//!
-//!     _stack_top = ORIGIN(RAM) + LENGTH(RAM);
-//!
 //!     /DISCARD/ : {
 //! 	    *(.ARM.*)
 //!     }
 //! }
 //! ```
+//!
+//! **This script is also available with comments in the repository as
+//! [`layout.ld`](https://github.com/irevoire/teensy/blob/master/layout.ld).**
 //!
 //! ### Target
 //! In order to compile your code for the teensy you need to specify the architecture you are
@@ -139,6 +142,23 @@
 //! ### Complete example
 //! You can find a complete example of the setup blinking a led
 //! [here](https://github.com/irevoire/teensy_blink)
+//!
+//! # Advanced usage
+//! ## Choosing yourself which components are used
+//! If you use the crate without specifying anything, as seen in the quickstart guide,
+//! every components will be enbled and the teensy will run at max clock speed.
+//! This crate provide a feature `manual_init` to provide your own initialization function.
+//! You can see the `examples/blink_manual_init.rs` file to see how to use the feature in your
+//! code.
+//! You’ll also need to import the crate with the feature enabled:
+//! ```toml
+//! [dependencies.teensy]
+//! git = "https://github.com/irevoire/teensy.git"
+//! default-features = false
+//! features = ["manual_init"]
+//! ```
+//! [Here is an example of repository showing the usage of this feature.
+//! ](https://github.com/irevoire/teensy_blink_manual)
 //!
 
 /// This module provide all the needed functions to boot the teensy.
