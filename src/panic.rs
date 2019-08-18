@@ -19,10 +19,13 @@
 /// ```rust
 /// teensy::define_panic!{empty}
 /// ```
-#[macro_export]
+#[macro_export(local_inner_macros)] // this way we are sure the macro are in scope
 macro_rules! define_panic {
     (empty) => {
         empty_panic!();
+    };
+    (blink) => {
+        blink_panic!();
     };
 }
 
@@ -33,6 +36,35 @@ macro_rules! empty_panic {
         #[panic_handler]
         fn empty_panic(_pi: &core::panic::PanicInfo) -> ! {
             loop {}
+        }
+    };
+}
+
+/// A panic blinking a led
+#[macro_export]
+macro_rules! blink_panic {
+    () => {
+        #[panic_handler]
+        fn blink_panic(_pi: &core::panic::PanicInfo) -> ! {
+            // we don't know how was the crate included
+            use teensy::*;
+            // here we don't know if the port holding the led is on
+            // so we need to reconfigure everything
+            let (wdog, sim) = unsafe { (watchdog::Watchdog::new(), sim::Sim::new()) };
+            wdog.disable();
+            sim.enable_clock(sim::Clock::PortC);
+
+            // now we can make our led blink
+            let led = unsafe { make_pin!(led) };
+
+            let mut led = led.make_gpio();
+
+            led.output();
+
+            loop {
+                led.toggle();
+                sleep::sleep_ms(500);
+            }
         }
     };
 }
