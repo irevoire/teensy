@@ -16,6 +16,16 @@ use crate::*;
 /// Disable the watchdog.
 #[no_mangle]
 extern "C" fn __boot() {
+    unsafe {
+        init();
+        main();
+    }
+    core::panic!("Came out of main");
+}
+
+#[cfg(not(feature = "manual_init"))]
+#[no_mangle]
+fn init() {
     let (wdog, sim, mcg, osc) = unsafe {
         (
             watchdog::Watchdog::new(),
@@ -56,12 +66,6 @@ extern "C" fn __boot() {
     } else {
         panic!("Somehow the clock wasn't in FEI mode");
     }
-
-    unsafe {
-        main();
-    }
-
-    core::panic!("Came out of main");
 }
 
 /// This is the Interrupt Descriptor Table

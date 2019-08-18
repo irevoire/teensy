@@ -1,8 +1,9 @@
 OUTDIR=target/thumbv7em-none-eabi/release/examples
+FEATURES?=""
 
 # You can build an example by doing `ex_blink` for example
 ex_%:
-	cargo build --release --example $*
+	cargo build --release --example $* --features "${FEATURES}"
 
 # This build the hexadecimal version of an example
 %.hex: ex_%
