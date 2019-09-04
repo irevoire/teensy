@@ -9,11 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - run:  sh ./configure.sh
     - name: Build lib
-      run: |
-        sh ./configure.sh
-        cargo build
+      run: cargo build
     - name: Build examples
-      run: |
-        sh ./configure.sh
-        cargo build --examples
+      run: cargo build --examples
