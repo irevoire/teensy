@@ -1,0 +1,19 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build lib
+      run: |
+        sh ./configure.sh
+        cargo build
+    - name: Build examples
+      run: |
+        sh ./configure.sh
+        cargo build --examples
