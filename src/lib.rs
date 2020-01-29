@@ -181,6 +181,7 @@ pub mod watchdog;
 // I think the next modules should be moved to a kindof "common" module
 /// Implementation of the sleep function
 pub mod sleep;
+pub mod uart;
 
 /// The only function you will need to implements
 extern "Rust" {

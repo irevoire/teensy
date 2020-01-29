@@ -30,11 +30,13 @@ pub struct Sim {
     sopt7: Volatile<u32>,
     _pad3: Volatile<[u32; 2]>,
     sdid: Volatile<u32>,
-    _pad4: Volatile<[u32; 3]>,
-    scgc4: Volatile<u32>,
-    scgc5: Volatile<u32>, /* clock gating control registers  */
-    scgc6: Volatile<u32>,
-    scgc7: Volatile<u32>,
+    pub scgc1: Volatile<u32>,
+    pub scgc2: Volatile<u32>,
+    pub scgc3: Volatile<u32>,
+    pub scgc4: Volatile<u32>,
+    pub scgc5: Volatile<u32>, /* clock gating control registers  */
+    pub scgc6: Volatile<u32>,
+    pub scgc7: Volatile<u32>,
     clkdiv1: Volatile<u32>,
     clkviv2: Volatile<u32>,
     fcfg1: Volatile<u32>,
