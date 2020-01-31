@@ -19,8 +19,6 @@ pub enum Available_UART {
     UART0,
     UART1,
     UART2,
-    UART3,
-    UART4,
 }
 
 use Available_UART::*;
@@ -102,10 +100,18 @@ impl UART {
                 tx.set_pin_mode(3);
                 UART0_BASE_PTR as *mut UART
             }
-            UART1 => UART1_BASE_PTR as *mut UART,
-            UART2 => UART2_BASE_PTR as *mut UART,
-            UART3 => UART3_BASE_PTR as *mut UART,
-            UART4 => UART4_BASE_PTR as *mut UART,
+            UART1 => {
+                let (mut rx, mut tx) = (crate::port::Pin::new(9), crate::port::Pin::new(10));
+                rx.set_pin_mode(3);
+                tx.set_pin_mode(3);
+                UART1_BASE_PTR as *mut UART
+            }
+            UART2 => {
+                let (mut rx, mut tx) = (crate::port::Pin::new(7), crate::port::Pin::new(8));
+                rx.set_pin_mode(3);
+                tx.set_pin_mode(3);
+                UART2_BASE_PTR as *mut UART
+            }
         }
     }
     pub fn name(&self) -> Available_UART {
@@ -114,8 +120,6 @@ impl UART {
             UART0_BASE_PTR => UART0,
             UART1_BASE_PTR => UART1,
             UART2_BASE_PTR => UART2,
-            UART3_BASE_PTR => UART3,
-            UART4_BASE_PTR => UART4,
             _ => unreachable!(),
         }
     }
@@ -132,12 +136,6 @@ impl UART {
             }),
             UART2 => sim.scgc4.update(|scgc4| {
                 scgc4.set_bit(12, true);
-            }),
-            UART3 => sim.scgc4.update(|scgc4| {
-                scgc4.set_bit(13, true);
-            }),
-            UART4 => sim.scgc1.update(|scgc1| {
-                scgc1.set_bit(10, true);
             }),
         }
 
