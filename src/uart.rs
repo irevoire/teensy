@@ -27,7 +27,7 @@ use Available_UART::*;
 
 #[repr(C, packed)]
 #[allow(non_snake_case)]
-pub struct UART_MemoryMap {
+pub struct UART {
     /// < UART Baud Rate Registers:High, offset: 0x0
     BDH: Volatile<u8>,
     /// < UART Baud Rate Registers: Low, offset: 0x1
@@ -93,23 +93,23 @@ pub struct UART_MemoryMap {
     // TODO add the end of the struct p 1206
 }
 
-impl UART_MemoryMap {
-    pub unsafe fn new(num: Available_UART) -> &'static mut UART_MemoryMap {
+impl UART {
+    pub unsafe fn new(num: Available_UART) -> &'static mut UART {
         &mut *match num {
             UART0 => {
                 let (mut rx, mut tx) = (crate::port::Pin::new(0), crate::port::Pin::new(1));
                 rx.set_pin_mode(3);
                 tx.set_pin_mode(3);
-                UART0_BASE_PTR as *mut UART_MemoryMap
+                UART0_BASE_PTR as *mut UART
             }
-            UART1 => UART1_BASE_PTR as *mut UART_MemoryMap,
-            UART2 => UART2_BASE_PTR as *mut UART_MemoryMap,
-            UART3 => UART3_BASE_PTR as *mut UART_MemoryMap,
-            UART4 => UART4_BASE_PTR as *mut UART_MemoryMap,
+            UART1 => UART1_BASE_PTR as *mut UART,
+            UART2 => UART2_BASE_PTR as *mut UART,
+            UART3 => UART3_BASE_PTR as *mut UART,
+            UART4 => UART4_BASE_PTR as *mut UART,
         }
     }
     pub fn name(&self) -> Available_UART {
-        let addr = (self as *const UART_MemoryMap) as u32;
+        let addr = (self as *const UART) as u32;
         match addr {
             UART0_BASE_PTR => UART0,
             UART1_BASE_PTR => UART1,
@@ -162,10 +162,21 @@ impl UART_MemoryMap {
         self.C2.write(UART_C2_TX_ENABLE_MASK);
     }
 
-    pub fn putchar(&mut self, c: char) {
+    pub fn write_byte(&mut self, b: u8) {
         //TDRE is bit 7
         while !self.S1.read().get_bit(7) {}
 
-        self.D.write(c as u8);
+        self.D.write(b);
+    }
+}
+
+impl core::fmt::Write for UART {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        for b in s.bytes() {
+            self.write_byte(b);
+        }
+
+        while !self.S1.read().get_bit(6) {}
+        Ok(())
     }
 }
