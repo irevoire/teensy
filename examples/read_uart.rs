@@ -9,8 +9,6 @@ define_panic! {empty}
 
 #[no_mangle]
 fn main() {
-    let mut time = core::time::Duration::new(0, 0);
-
     let (led, sim, uart) = unsafe {
         (
             make_pin!(led),
@@ -25,10 +23,14 @@ fn main() {
     let mut led = led.make_gpio();
     led.output();
 
+    let mut start = 0;
+    let mut buf = ['a'; 30];
     loop {
+        writeln!(uart, "Waiting for input: {}", start).unwrap();
+        start += 1;
         led.toggle();
         sleep::sleep_ms(500);
-        writeln!(uart, "Hello World: {:?}", time).unwrap(); // uart write can’t send error
-        time += core::time::Duration::from_millis(500);
+        uart.read_line(&mut buf);
+        write!(uart, "got: {:?}", buf).unwrap();
     }
 }

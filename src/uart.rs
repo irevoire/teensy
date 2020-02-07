@@ -10,8 +10,10 @@ const UART4_BASE_PTR: u32 = 0x400E_A000;
 const UART_BDH_MASK: u8 = 0x1F;
 const UART_BDL_MASK: u8 = 0xFF;
 const UART_C4_BRFA_MASK: u8 = 0x1F;
+
 const UART_C2_TX_ENABLE_MASK: u8 = 0x08;
 const UART_C2_RX_ENABLE_MASK: u8 = 0x04;
+
 const UART_S1_TDRE_MASK: u8 = 0x80;
 
 #[allow(non_camel_case_types)]
@@ -21,7 +23,7 @@ pub enum Available_UART {
     UART2,
 }
 
-use Available_UART::*;
+pub use Available_UART::*;
 
 #[repr(C, packed)]
 #[allow(non_snake_case)]
@@ -97,18 +99,21 @@ impl UART {
             UART0 => {
                 let (mut rx, mut tx) = (crate::port::Pin::new(0), crate::port::Pin::new(1));
                 rx.set_pin_mode(3);
+                rx.set_pin_ps(true);
                 tx.set_pin_mode(3);
                 UART0_BASE_PTR as *mut UART
             }
             UART1 => {
                 let (mut rx, mut tx) = (crate::port::Pin::new(9), crate::port::Pin::new(10));
                 rx.set_pin_mode(3);
+                rx.set_pin_ps(true);
                 tx.set_pin_mode(3);
                 UART1_BASE_PTR as *mut UART
             }
             UART2 => {
                 let (mut rx, mut tx) = (crate::port::Pin::new(7), crate::port::Pin::new(8));
                 rx.set_pin_mode(3);
+                rx.set_pin_ps(true);
                 tx.set_pin_mode(3);
                 UART2_BASE_PTR as *mut UART
             }
@@ -157,14 +162,37 @@ impl UART {
         self.C4.write(brfa & UART_C4_BRFA_MASK);
 
         // enable Tx
-        self.C2.write(UART_C2_TX_ENABLE_MASK);
+        self.C2
+            .write(UART_C2_TX_ENABLE_MASK | UART_C2_RX_ENABLE_MASK);
     }
 
     pub fn write_byte(&mut self, b: u8) {
-        //TDRE is bit 7
         while !self.S1.read().get_bit(7) {}
 
         self.D.write(b);
+    }
+
+    pub fn read_byte(&mut self) -> u8 {
+        while !self.S1.read().get_bit(5) {}
+
+        self.D.read()
+    }
+
+    pub fn read_char(&mut self) -> char {
+        self.read_byte() as char
+    }
+
+    pub fn read_line(&mut self, buf: &mut [char]) {
+        let mut idx = 0;
+        while idx < buf.len() {
+            let c = self.read_char();
+            buf[idx] = c;
+            if c == '\n' || c == '\r' {
+                buf[idx] = '\0';
+                break;
+            }
+            idx += 1;
+        }
     }
 }
 
