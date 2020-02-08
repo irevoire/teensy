@@ -27,6 +27,9 @@ macro_rules! define_panic {
     (blink) => {
         blink_panic!();
     };
+    (uart) => {
+        uart_panic!();
+    };
 }
 
 /// A panic doing nothing
@@ -55,14 +58,40 @@ macro_rules! blink_panic {
             sim.enable_clock(sim::Clock::PortC);
 
             // now we can make our led blink
-            let led = unsafe { make_pin!(led) };
-
-            let mut led = led.make_gpio();
-
-            led.output();
+            let mut led = unsafe { make_pin!(led).make_gpio().with_output() };
 
             loop {
                 led.toggle();
+                sleep::sleep_ms(500);
+            }
+        }
+    };
+}
+
+/// A panic sending your message on the uart serial port 1 in a loop
+#[macro_export]
+macro_rules! uart_panic {
+    () => {
+        #[panic_handler]
+        fn uart_panic(pi: &core::panic::PanicInfo) -> ! {
+            // we don't know how was the crate included
+            use core::fmt::Write;
+            use teensy::*;
+            // here we don't know if the port holding the led is on
+            // so we need to reconfigure everything
+            let (wdog, sim) = unsafe { (watchdog::Watchdog::new(), sim::Sim::new()) };
+            wdog.disable();
+            sim.enable_clock(sim::Clock::PortB);
+
+            let uart = unsafe {
+                let mut uart = uart::UART::new(uart::UART0);
+                uart.setup(sim, 115200);
+                uart
+            };
+
+            writeln!(uart, "Teensy panicked").unwrap();
+            loop {
+                writeln!(uart, "{}", pi).unwrap();
                 sleep::sleep_ms(500);
             }
         }

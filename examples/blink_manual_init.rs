@@ -4,16 +4,11 @@
 
 use teensy::*;
 
-define_panic!{empty}
+define_panic! {empty}
 
 #[no_mangle]
 fn init() {
-    let (wdog, sim) = unsafe {
-        (
-            watchdog::Watchdog::new(),
-            sim::Sim::new(),
-        )
-    };
+    let (wdog, sim) = unsafe { (watchdog::Watchdog::new(), sim::Sim::new()) };
 
     wdog.disable();
 
@@ -23,11 +18,7 @@ fn init() {
 
 #[no_mangle]
 fn main() {
-    let led = unsafe { make_pin!(led) };
-
-    let mut led = led.make_gpio();
-
-    led.output();
+    let mut led = unsafe { make_pin!(led).make_gpio().with_output() };
 
     loop {
         led.toggle();

@@ -44,6 +44,16 @@ impl Gpio {
         }
     }
 
+    /// Switch the pin in input mode (can read but not write)
+    /// See `input` function
+    ///
+    /// *This function can be implemented with a single write,
+    /// eliminating the potential race condition. Thus its use is safe*
+    pub fn with_input(mut self) -> Self {
+        self.input();
+        self
+    }
+
     /// Switch the pin in output mode (can write but not read)
     ///
     /// *This function can be implemented with a single write,
@@ -52,6 +62,16 @@ impl Gpio {
         unsafe {
             (*self.gpio).pddr[self.pin.id].write(1);
         }
+    }
+
+    /// Switch the pin in output mode (can write but not read)
+    /// See `output` function
+    ///
+    /// *This function can be implemented with a single write,
+    /// eliminating the potential race condition. Thus its use is safe*
+    pub fn with_output(mut self) -> Self {
+        self.output();
+        self
     }
 
     /// **Before use, call the `input` function**

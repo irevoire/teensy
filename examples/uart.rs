@@ -11,9 +11,9 @@ define_panic! {empty}
 fn main() {
     let mut time = core::time::Duration::new(0, 0);
 
-    let (led, sim, uart) = unsafe {
+    let (mut led, sim, uart) = unsafe {
         (
-            make_pin!(led),
+            make_pin!(led).make_gpio().with_output(),
             sim::Sim::new(),
             uart::UART::new(uart::UART0),
         )
@@ -21,9 +21,6 @@ fn main() {
     unsafe {
         uart.setup(sim, 115200);
     }
-
-    let mut led = led.make_gpio();
-    led.output();
 
     loop {
         led.toggle();
