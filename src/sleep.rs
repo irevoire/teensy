@@ -1,10 +1,26 @@
-//! At the moment this file is a rust reimplementation of this file:
-//! https://github.com/mensi/teensy_bare_metal/blob/master/common/delay.c
-
 use core::arch::arm::__nop;
+
+/// This function come directly from the [cortex_m
+/// crate](https://docs.rs/cortex-m/0.6.2/cortex_m/asm/fn.delay.html)
+/// It provide a delay in number of instructions. Use it only if you know what
+/// you are doing.
+#[inline]
+pub fn delay(n: u64) {
+    unsafe {
+        asm!("1:
+                  nop
+                  subs $0, $$1
+                  bne.n 1b"
+                 : "+r"(n / 4 + 1)
+                 :
+                 :
+                 : "volatile");
+    }
+}
 
 /// This implementation will be more imprecise with lower CPU frequencies and
 /// not properly work at all with anything below 5 MHz
+#[inline]
 pub fn sleep_us(microseconds: u32) {
     (0..microseconds).for_each(|_| {
         let mut inner = crate::mcg::F_CPU / 5_000_000;

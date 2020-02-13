@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![feature(stdsimd)]
 #![no_std]
+#![feature(asm)]
 
 //! # Teensy
 //! This crate provide multiple helpers functions to manipulate the teensy in baremetal rust.
