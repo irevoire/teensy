@@ -3,7 +3,7 @@
 Currently this crate should **NOT** be used in anything serious.
 
 You can find the documentation here until we publish the crate:
-http://irevoire.irevoire.ovh/teensy/crate_doc/teensy/index.html
+http://teensy.irevoire.ovh/
 
 You can find some **examples** in the [examples](examples) directory.
 To test the example you first need to follow the quickstart guide from the documentation.
