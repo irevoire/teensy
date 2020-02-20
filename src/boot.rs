@@ -1,3 +1,4 @@
+#![no_builtins]
 //! Here is the most important file of this crate.
 //! When you add this crate as a dependency it will move the bootloader to the good section. Enable
 //! **all** the port, the clock at 72MHz and disable the watchdog and **then** call your `main`.
@@ -5,6 +6,7 @@
 //! this crate.
 
 use crate::*;
+use r0::{init_data, zero_bss};
 
 /// The first function to be executed by the teensy
 /// Enable all the clocks:
@@ -15,8 +17,18 @@ use crate::*;
 /// use all the ports.
 /// Disable the watchdog.
 #[no_mangle]
-extern "C" fn __boot() {
+extern "C" fn __reset() {
+    extern "C" {
+        static mut _sbss: u32;
+        static mut _ebss: u32;
+        static mut _sdata: u32;
+        static mut _edata: u32;
+        static _sidata: u32;
+    }
+
     unsafe {
+        zero_bss(&mut _sbss, &mut _ebss);
+        init_data(&mut _sdata, &mut _edata, &_sidata);
         init();
         main();
     }
@@ -49,13 +61,11 @@ fn init() {
     mcg.set_clocks(mcg::CpuFreq::Default, sim);
 }
 
-
-
 /// This is the Interrupt Descriptor Table
 #[link_section = ".vector_table.interrupts"]
 #[no_mangle]
 pub static _INTERRUPTS: [unsafe extern "C" fn(); 111] = [
-    __boot, // TODO: Move this to a different vector?
+    __reset, // TODO: Move this to a different vector?
     interrupts::isr_non_maskable,
     interrupts::isr_hard_fault,
     interrupts::isr_memmanage_fault,

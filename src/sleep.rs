@@ -22,13 +22,13 @@ pub fn delay(n: u64) {
 /// not properly work at all with anything below 5 MHz
 #[inline]
 pub fn sleep_us(microseconds: u32) {
-    (0..microseconds).for_each(|_| {
+    (0..microseconds).for_each(|_| unsafe {
         let mut inner = crate::mcg::F_CPU / 5_000_000;
 
         // This loop should take 5 cycles
         while inner != 0 {
             inner -= 1;
-            unsafe {
+            {
                 __nop();
             }
         }
@@ -38,7 +38,7 @@ pub fn sleep_us(microseconds: u32) {
 /// For milliseconds, this loop approach is not too far off reality as long
 /// as it runs uninterrupted.
 pub fn sleep_ms(milliseconds: u32) {
-    (0..milliseconds).for_each(|_| {
+    (0..milliseconds).for_each(|_| unsafe {
         let mut inner = crate::mcg::F_CPU / 10_000;
 
         // This loop should take 10 cycles:

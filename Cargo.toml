@@ -12,6 +12,7 @@ edition = "2018"
 [dependencies]
 volatile = "*"
 bit_field = "*"
+r0 = "0.2.2"
 
 [features]
 default = []

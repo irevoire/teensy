@@ -1,11 +1,10 @@
 use core::mem;
 
+use crate::sim;
 use bit_field::BitField;
 use volatile::Volatile;
-use crate::sim;
 
-/// TODO This value should not be hardcoded and should change depending on the choosen frequency
-pub const F_CPU: u32 = 72_000_000;
+pub static mut F_CPU: u32 = 72_000_000;
 
 #[repr(C, packed)]
 pub struct Mcg {
@@ -45,10 +44,10 @@ enum OscSource {
 
 pub enum CpuFreq {
     /// Core/Bus/Flash speeds
-    High, // 96/48/24 (96MHz PLL)
+    High,    // 96/48/24 (96MHz PLL)
     Default, // 72/36/24 (72MHz PLL)
     Reduced, // 48/48/24 (96MHz PLL)
-    Low // 24/24/24 (96MHz PLL)
+    Low,     // 24/24/24 (96MHz PLL)
 }
 
 pub struct Fei {
@@ -175,7 +174,6 @@ impl Pbe {
             c6.set_bit(6, false);
         });
 
-
         // Wait for PLL to be disabled
         while self.mcg.s.read().get_bit(5) {}
         // Wait for the PLL to be "unlocked"
@@ -202,7 +200,7 @@ impl Pee {
         // which would be invalid to set, we just check for the known
         // value "0" here.
         while self.mcg.s.read().get_bits(2..4) != 2 {}
-        return Pbe { mcg: self.mcg }
+        return Pbe { mcg: self.mcg };
     }
 }
 
@@ -210,7 +208,7 @@ pub enum Clock {
     Fei(Fei),
     Fbe(Fbe),
     Pbe(Pbe),
-    Pee(Pee)
+    Pee(Pee),
 }
 
 impl Mcg {
@@ -232,45 +230,53 @@ impl Mcg {
     pub fn set_clocks(&'static mut self, clock: CpuFreq, sim: &mut sim::Sim) -> Pee {
         match clock {
             CpuFreq::High => {
-                //unsafe { F_CPU = 96_000_000; }
+                unsafe {
+                    F_CPU = 96_000_000;
+                }
                 // Set our clocks: 96/48/24
                 sim.set_dividers(1, 2, 4);
                 // We would also set the USB divider here if we wanted to use it.
                 let fbe = self.mode_to_fbe();
                 let pbe = fbe.enable_pll(24, 4); // 16MHz / 4 * 24 = 96MHz
                 pbe.use_pll()
-            },
+            }
             CpuFreq::Default => {
-                //unsafe { F_CPU = 72_000_000; }
+                unsafe {
+                    F_CPU = 72_000_000;
+                }
                 // Set our clocks: 72/36/24
                 sim.set_dividers(1, 2, 3);
                 // We would also set the USB divider here if we wanted to use it.
                 let fbe = self.mode_to_fbe();
                 let pbe = fbe.enable_pll(27, 6); // 16MHz / 6 * 27 = 72MHz
                 pbe.use_pll()
-            },
+            }
             CpuFreq::Reduced => {
-                //unsafe { F_CPU = 48_000_000; }
+                unsafe {
+                    F_CPU = 48_000_000;
+                }
                 // Set our clocks: 48/48/24
                 sim.set_dividers(2, 2, 4);
                 // We would also set the USB divider here if we wanted to use it.
                 let fbe = self.mode_to_fbe();
                 let pbe = fbe.enable_pll(24, 4); // 16MHz / 4 * 24 = 96MHz
                 pbe.use_pll()
-            },
+            }
             CpuFreq::Low => {
-                //unsafe { F_CPU = 24_000_000; }
+                unsafe {
+                    F_CPU = 24_000_000;
+                }
                 // Set our clocks: 24/24/24
                 sim.set_dividers(4, 4, 4);
                 // We would also set the USB divider here if we wanted to use it.
                 let fbe = self.mode_to_fbe();
                 let pbe = fbe.enable_pll(24, 4); // 16MHz / 4 * 24 = 96MHz
                 pbe.use_pll()
-            },
+            }
         }
     }
 
-    pub fn mode_to_fbe(&'static mut self) -> Fbe{
+    pub fn mode_to_fbe(&'static mut self) -> Fbe {
         return match self.clock() {
             Clock::Fei(mut fei) => {
                 // Our 16MHz xtal is "very fast", and needs to be divided
@@ -279,14 +285,14 @@ impl Mcg {
                 fei.enable_xtal(OscRange::VeryHigh);
                 // (literally the only valid divisor on teensy)
                 fei.use_external(512) // 16MHz/512 = 31.25KHz
-            },
-            Clock::Fbe(fbe) => { fbe },
-            Clock::Pbe(pbe) => { pbe.disable_pll() },
+            }
+            Clock::Fbe(fbe) => fbe,
+            Clock::Pbe(pbe) => pbe.disable_pll(),
             Clock::Pee(pee) => {
                 let pbe = pee.use_external();
                 let fbe = pbe.disable_pll();
-                return fbe
+                return fbe;
             }
-        }
+        };
     }
 }
