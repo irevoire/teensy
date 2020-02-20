@@ -38,7 +38,7 @@ pub struct Sim {
     pub scgc6: Volatile<u32>,
     pub scgc7: Volatile<u32>,
     clkdiv1: Volatile<u32>,
-    clkviv2: Volatile<u32>,
+    clkdiv2: Volatile<u32>,
     fcfg1: Volatile<u32>,
     fcfg2: Volatile<u32>,
     uidh: Volatile<u32>,

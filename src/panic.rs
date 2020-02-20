@@ -62,7 +62,7 @@ macro_rules! blink_panic {
 
             loop {
                 led.toggle();
-                sleep::sleep_ms(500);
+                sleep::sleep_ms(50);
             }
         }
     };

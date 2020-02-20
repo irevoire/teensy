@@ -24,27 +24,40 @@ SECTIONS
 {
     PROVIDE(_stack_top = ORIGIN(RAM) + LENGTH(RAM));
 
-    .vector_table ORIGIN(FLASH) : {
+	.text ORIGIN(FLASH) : {
         /* Initial stack pointer */
         LONG(_stack_top);
 
+        /* TODO: add other items from vector_table before interrupts */
         /* Interrupts */
         KEEP(*(.vector_table.interrupts));
-    } > FLASH
-
-
-
-	.text : {
 		. = 0x400;
 		KEEP(*(.flashconfig*))
 		. = ALIGN(4);
 		*(.text*)
-    } > FLASH = 0xFF
+    } > FLASH
 
     .rodata : ALIGN(4){
 	    *(.rodata .rodata.*);
 	    . = ALIGN(4);
     } > FLASH
+
+    /* uninitialized static vars */
+    .bss : ALIGN(4)
+    {
+        _sbss = .;
+        *(.bss.*);
+        _ebss = ALIGN(4);
+    } > RAM
+
+    /* initialized static vars */
+    .data : ALIGN(4)
+    {
+        _sdata = .;
+        *(.data.*);
+        _edata = ALIGN(4);
+    } > RAM AT > FLASH
+    _sidata = LOADADDR(.data);
 
     /DISCARD/ : {
 	    *(.ARM.*)

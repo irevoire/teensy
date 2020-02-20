@@ -5,12 +5,14 @@ categories = ["embedded", "no-std"]
 authors = [
 	"Thomas Campistron <irevoire@hotmail.fr>",
 	"Debilausaure",
+	"Devin Brite <dwbrite@gmail.com>"
 ]
 edition = "2018"
 
 [dependencies]
 volatile = "*"
 bit_field = "*"
+r0 = "0.2.2"
 
 [features]
 default = []
