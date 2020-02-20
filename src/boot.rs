@@ -26,16 +26,16 @@ extern "C" fn __boot() {
 #[cfg(not(feature = "manual_init"))]
 #[no_mangle]
 fn init() {
-    let (wdog, sim, mcg, osc) = unsafe {
+    let (sim, mcg, osc) = unsafe {
+
+        watchdog::Watchdog::new().disable();
+
         (
-            watchdog::Watchdog::new(),
             sim::Sim::new(),
             mcg::Mcg::new(),
             osc::Osc::new(),
         )
     };
-
-    wdog.disable();
 
     // Enable the crystal oscillator with 10pf of capacitance
     osc.enable(10);
@@ -46,27 +46,10 @@ fn init() {
     sim.enable_clock(sim::Clock::PortD);
     sim.enable_clock(sim::Clock::PortE);
 
-    // Set our clocks:
-    // core: 72Mhz
-    // peripheral: 36MHz
-    // flash: 24MHz
-    sim.set_dividers(1, 2, 3);
-    // We would also set the USB divider here if we wanted to use it.
-
-    // Now we can start setting up the MCG for our needs.
-    if let mcg::Clock::Fei(mut fei) = mcg.clock() {
-        // Our 16MHz xtal is "very fast", and needs to be divided
-        // by 512 to be in the acceptable FLL range.
-        fei.enable_xtal(mcg::OscRange::VeryHigh);
-        let fbe = fei.use_external(512);
-
-        // PLL is 27/6 * xtal == 72MHz
-        let pbe = fbe.enable_pll(27, 6);
-        pbe.use_pll();
-    } else {
-        panic!("Somehow the clock wasn't in FEI mode");
-    }
+    mcg.set_clocks(mcg::CpuFreq::Default, sim);
 }
+
+
 
 /// This is the Interrupt Descriptor Table
 #[link_section = ".vector_table.interrupts"]

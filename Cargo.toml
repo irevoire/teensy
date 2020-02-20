@@ -5,6 +5,7 @@ categories = ["embedded", "no-std"]
 authors = [
 	"Thomas Campistron <irevoire@hotmail.fr>",
 	"Debilausaure",
+	"Devin Brite <dwbrite@gmail.com>"
 ]
 edition = "2018"
 

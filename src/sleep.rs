@@ -44,17 +44,18 @@ pub fn sleep_ms(milliseconds: u32) {
         // This loop should take 10 cycles:
         //  inner -= 1     sub: 1 cycle
         //  inner != 0     beq: 1 cycle if not taken
-        //  6*nop          nop: 1 cycle
+        //  7*nop          nop: 1 cycle
         //  endwhile       b:   1 + (1-3) cycles
         while inner != 0 {
             inner -= 1;
-            unsafe {
+            {
                 __nop(); // 1
                 __nop(); // 2
                 __nop(); // 3
                 __nop(); // 4
                 __nop(); // 5
                 __nop(); // 6
+                __nop(); // 7
             }
         }
     });
