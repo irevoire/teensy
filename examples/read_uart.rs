@@ -3,6 +3,7 @@
 #![no_main]
 
 use core::fmt::Write;
+use embedded_hal::prelude::*;
 use teensy::*;
 
 define_panic! {empty}
@@ -28,7 +29,7 @@ fn main() {
     loop {
         writeln!(uart, "Waiting for input: {}", start).unwrap();
         start += 1;
-        led.toggle();
+        led.try_toggle().unwrap();
         sleep::sleep_ms(500);
         uart.read_line(&mut buf);
         write!(uart, "got: {:?}", buf).unwrap();

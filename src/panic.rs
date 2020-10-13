@@ -49,6 +49,7 @@ macro_rules! blink_panic {
     () => {
         #[panic_handler]
         fn blink_panic(_pi: &core::panic::PanicInfo) -> ! {
+            use embedded_hal::prelude::*;
             // we don't know how was the crate included
             use teensy::*;
             // here we don't know if the port holding the led is on
@@ -61,7 +62,7 @@ macro_rules! blink_panic {
             let mut led = unsafe { make_pin!(led).make_gpio().with_output() };
 
             loop {
-                led.toggle();
+                led.try_toggle().unwrap();
                 sleep::sleep_ms(500);
             }
         }

@@ -3,6 +3,7 @@
 #![no_main]
 
 use core::fmt::Write;
+use embedded_hal::prelude::*;
 use teensy::*;
 
 define_panic! {empty}
@@ -23,7 +24,7 @@ fn main() {
     }
 
     loop {
-        led.toggle();
+        led.try_toggle().unwrap();
         sleep::sleep_ms(500);
         writeln!(uart, "Hello World: {:?}", time).unwrap(); // uart write can’t send error
         time += core::time::Duration::from_millis(500);

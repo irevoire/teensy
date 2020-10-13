@@ -73,35 +73,62 @@ impl Gpio {
         self.output();
         self
     }
+}
+
+use embedded_hal::digital;
+
+impl digital::InputPin for Gpio {
+    type Error = !;
 
     /// **Before use, call the `input` function**
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(3) };
     /// let mut gpio = pin.make_gpio();
     /// gpio.input();
-    /// gpio.read();
+    /// gpio.try_is_high();
     /// ```
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn read(&mut self) -> u32 {
-        unsafe { (*self.gpio).pdir[self.pin.id].read() }
+    fn try_is_high(&self) -> Result<bool, Self::Error> {
+        let v = unsafe { (*self.gpio).pdir[self.pin.id].read() };
+        Ok(v != 0)
     }
+
+    /// **Before use, call the `input` function**
+    /// ```rust
+    /// let pin = unsafe { port::Port::new(port::PortName::C).pin(3) };
+    /// let mut gpio = pin.make_gpio();
+    /// gpio.input();
+    /// gpio.try_is_low();
+    /// ```
+    ///
+    /// *This function can be implemented with a single write,
+    /// eliminating the potential race condition. Thus its use is safe*
+    fn try_is_low(&self) -> Result<bool, Self::Error> {
+        let v = unsafe { (*self.gpio).pdir[self.pin.id].read() };
+        Ok(v == 0)
+    }
+}
+
+impl digital::OutputPin for Gpio {
+    type Error = !;
 
     /// **Before use, call the `output` function**
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();
     /// gpio.output();
-    /// gpio.high();
+    /// gpio.try_set_high();
     /// ```
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn high(&mut self) {
+    fn try_set_high(&mut self) -> Result<(), Self::Error> {
         unsafe {
             (*self.gpio).psor[self.pin.id].write(1);
         }
+        Ok(())
     }
 
     /// **Before use, call the `output` function**
@@ -109,30 +136,36 @@ impl Gpio {
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();
     /// gpio.output();
-    /// gpio.low();
+    /// gpio.try_set_low();
     /// ```
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn low(&mut self) {
+    fn try_set_low(&mut self) -> Result<(), Self::Error> {
         unsafe {
             (*self.gpio).pcor[self.pin.id].write(1);
         }
+        Ok(())
     }
+}
+
+impl digital::ToggleableOutputPin for Gpio {
+    type Error = !;
 
     /// **Before use, call the `output` function**
     /// ```rust
     /// let pin = unsafe { port::Port::new(port::PortName::C).pin(5) };
     /// let mut gpio = pin.make_gpio();
     /// gpio.output();
-    /// gpio.toggle();
+    /// gpio.try_toggle();
     /// ```
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn toggle(&mut self) {
+    fn try_toggle(&mut self) -> Result<(), Self::Error> {
         unsafe {
             (*self.gpio).ptor[self.pin.id].write(1);
         }
+        Ok(())
     }
 }

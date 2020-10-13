@@ -2,13 +2,14 @@
 #![no_std]
 #![no_main]
 
+use embedded_hal::prelude::*;
 use teensy::*;
 
 define_panic! {empty}
 
 #[no_mangle]
 fn main() {
-    let (led, mut pin) = unsafe { make_pin!(led, 1) };
+    let (led, mut pin) = unsafe { make_pin!(led, 6) };
 
     unsafe {
         pin.set_pin_pe(true);
@@ -22,9 +23,9 @@ fn main() {
     pin_in.input();
 
     loop {
-        match pin_in.read() {
-            0 => led_out.low(),
-            _ => led_out.high(),
+        match pin_in.try_is_high().unwrap() {
+            false => led_out.try_set_low().unwrap(),
+            true => led_out.try_set_high().unwrap(),
         }
     }
 }
