@@ -7,7 +7,7 @@ use core::arch::arm::__nop;
 #[inline]
 pub fn delay(n: u64) {
     unsafe {
-        asm!("1:
+        llvm_asm!("1:
                   nop
                   subs $0, $$1
                   bne.n 1b"

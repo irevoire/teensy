@@ -1,3 +1,4 @@
+#![feature(llvm_asm)]
 #![allow(dead_code)]
 #![feature(stdsimd)]
 #![no_std]
