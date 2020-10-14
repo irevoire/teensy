@@ -16,11 +16,8 @@ fn main() {
         pin.set_pin_ps(false);
     }
 
-    let mut led_out = led.make_gpio();
-    let mut pin_in = pin.make_gpio();
-
-    led_out.output();
-    pin_in.input();
+    let mut led_out = led.make_gpio().output();
+    let pin_in = pin.make_gpio().input();
 
     loop {
         match pin_in.try_is_high().unwrap() {

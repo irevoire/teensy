@@ -21,8 +21,7 @@ fn main() {
         uart.setup(sim, 115200);
     }
 
-    let mut led = led.make_gpio();
-    led.output();
+    let mut led = led.make_gpio().output();
 
     let mut start = 0;
     let mut buf = ['a'; 30];

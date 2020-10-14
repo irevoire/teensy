@@ -59,7 +59,7 @@ macro_rules! blink_panic {
             sim.enable_clock(sim::Clock::PortC);
 
             // now we can make our led blink
-            let mut led = unsafe { make_pin!(led).make_gpio().with_output() };
+            let mut led = unsafe { make_pin!(led).make_gpio().output() };
 
             loop {
                 led.try_toggle().unwrap();

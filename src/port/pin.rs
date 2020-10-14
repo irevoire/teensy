@@ -1,4 +1,4 @@
-use super::gpio::Gpio;
+use super::gpio::{Gpio, Uninitialized};
 use super::port::{Port, PortName};
 use bit_field::BitField;
 use volatile::Volatile;
@@ -201,7 +201,7 @@ impl Pin {
     }
 
     /// Put the pin in gpio mode and consume the pin into a gpio
-    pub fn make_gpio(self) -> Gpio {
+    pub fn make_gpio(self) -> Gpio<Uninitialized> {
         unsafe { Gpio::new(self) }
     }
 }

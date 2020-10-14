@@ -18,7 +18,7 @@ fn init() {
 
 #[no_mangle]
 fn main() {
-    let mut led = unsafe { make_pin!(led).make_gpio().with_output() };
+    let mut led = unsafe { make_pin!(led).make_gpio().output() };
 
     loop {
         led.toggle();

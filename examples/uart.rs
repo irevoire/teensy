@@ -14,7 +14,7 @@ fn main() {
 
     let (mut led, sim, uart) = unsafe {
         (
-            make_pin!(led).make_gpio().with_output(),
+            make_pin!(led).make_gpio().output(),
             sim::Sim::new(),
             uart::UART::new(uart::UART0),
         )
