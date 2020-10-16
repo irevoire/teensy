@@ -1,5 +1,6 @@
 use super::pin::Pin;
-use super::port::PortName;
+use super::{A, B, C, D, E};
+use core::marker::PhantomData;
 use volatile::Volatile;
 
 #[repr(C, packed)]
@@ -12,23 +13,25 @@ struct GpioBitband {
     pddr: [Volatile<u32>; 32],
 }
 
-use core::marker::PhantomData;
 pub struct Uninitialized {}
 pub struct Input {}
 pub struct Output {}
 
 /// Chapter 49: General-Purpose Input/Output (GPIO)
 /// doc/teensy_3.2.pdf - Page 1331
-pub struct Gpio<State> {
+pub struct Gpio<State, PortName> {
     gpio: *mut GpioBitband,
-    pin: Pin,
+    pin: Pin<PortName>,
     _phantom: PhantomData<State>,
+    _phantom2: PhantomData<PortName>,
 }
 
-impl Gpio<Uninitialized> {
+impl<PortName> Gpio<Uninitialized, PortName> {
     /// Consume a Pin into a Gpio.
-    pub unsafe fn new(mut pin: Pin) -> Gpio<Uninitialized> {
+    pub unsafe fn new(mut pin: Pin<PortName>) -> Self {
         pin.set_pin_mode(1); // put the pin in gpio mode
+        unreachable!();
+        /*
         let gpio = match pin.portname {
             PortName::A => 0x43FE_0000 as *mut GpioBitband,
             PortName::B => 0x43FE_0800 as *mut GpioBitband,
@@ -42,16 +45,17 @@ impl Gpio<Uninitialized> {
             pin,
             _phantom: Default::default(),
         }
+        */
     }
 }
 
-impl<AnyState> Gpio<AnyState> {
+impl<AnyState, PortName> Gpio<AnyState, PortName> {
     /// Switch the pin in input mode (can read but not write)
     /// See `input` function
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn input(self) -> Gpio<Input> {
+    pub fn input(self) -> Gpio<Input, PortName> {
         unsafe {
             (*self.gpio).pddr[self.pin.id].write(0);
         }
@@ -59,6 +63,7 @@ impl<AnyState> Gpio<AnyState> {
             gpio: self.gpio,
             pin: self.pin,
             _phantom: Default::default(),
+            _phantom2: Default::default(),
         }
     }
 
@@ -67,7 +72,7 @@ impl<AnyState> Gpio<AnyState> {
     ///
     /// *This function can be implemented with a single write,
     /// eliminating the potential race condition. Thus its use is safe*
-    pub fn output(self) -> Gpio<Output> {
+    pub fn output(self) -> Gpio<Output, PortName> {
         unsafe {
             (*self.gpio).pddr[self.pin.id].write(1);
         }
@@ -75,13 +80,14 @@ impl<AnyState> Gpio<AnyState> {
             gpio: self.gpio,
             pin: self.pin,
             _phantom: Default::default(),
+            _phantom2: Default::default(),
         }
     }
 }
 
 use embedded_hal::digital;
 
-impl digital::InputPin for Gpio<Input> {
+impl<PortName> digital::InputPin for Gpio<Input, PortName> {
     type Error = !;
 
     /// **Before use, call the `input` function**
@@ -115,7 +121,7 @@ impl digital::InputPin for Gpio<Input> {
     }
 }
 
-impl digital::OutputPin for Gpio<Output> {
+impl<PortName> digital::OutputPin for Gpio<Output, PortName> {
     type Error = !;
 
     /// **Before use, call the `output` function**
@@ -153,7 +159,7 @@ impl digital::OutputPin for Gpio<Output> {
     }
 }
 
-impl digital::ToggleableOutputPin for Gpio<Output> {
+impl<PortName> digital::ToggleableOutputPin for Gpio<Output, PortName> {
     type Error = !;
 
     /// **Before use, call the `output` function**

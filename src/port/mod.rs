@@ -55,13 +55,18 @@
 //! gpio.high();
 //! ```
 
+pub use self::gpio::Gpio;
 pub use self::pin::Pin;
 pub use self::port::Port;
-pub use self::port::PortName;
-pub use self::gpio::Gpio;
 
 mod gpio;
 mod pin;
 mod port;
 
 pub mod macros;
+
+pub struct A {}
+pub struct B {}
+pub struct C {}
+pub struct D {}
+pub struct E {}
